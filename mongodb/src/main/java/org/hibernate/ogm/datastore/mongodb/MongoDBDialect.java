@@ -133,7 +133,6 @@ import com.mongodb.client.model.CollationStrength;
 import com.mongodb.client.model.FindOneAndDeleteOptions;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.InsertOneModel;
-import com.mongodb.client.model.InsertOneOptions;
 import com.mongodb.client.model.MapReduceAction;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.UpdateOptions;
@@ -860,9 +859,8 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 		}
 
 		switch ( queryDescriptor.getOperation() ) {
-			case INSERTONE:
-				return doInsertOne( queryDescriptor, collection );
 			case INSERTMANY:
+			case INSERTONE:
 			case INSERT:
 				return doInsert( queryDescriptor, collection );
 			case REMOVE:
@@ -1171,23 +1169,6 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 			theOne = collection.withWriteConcern( (wc != null ? wc : collection.getWriteConcern() ) ).findOneAndUpdate( query, update, options );
 		}
 		return new SingleTupleIterator( theOne, collection, entityKeyMetadata );
-	}
-
-	private static int doInsertOne(final MongoDBQueryDescriptor queryDesc, final MongoCollection<Document> collection) {
-		Document options = queryDesc.getOptions();
-		WriteConcern wc = null;
-		Boolean bypass = null;
-		if ( options != null ) {
-			Document o = (Document) options.get( "writeConcern" );
-			bypass = options.getBoolean( "bypassDocumentValidation" );
-			wc = getWriteConcern( o );
-		}
-		InsertOneOptions insertOneOptions = new InsertOneOptions();
-		insertOneOptions.bypassDocumentValidation( ( bypass != null ? bypass : false ) );
-
-		collection.withWriteConcern( ( wc != null ? wc : collection.getWriteConcern() ) ).insertOne( queryDesc.getUpdateOrInsertOne(), insertOneOptions );
-
-		return 1;
 	}
 
 	private static int doInsert(final MongoDBQueryDescriptor queryDesc, final MongoCollection<Document> collection) {
