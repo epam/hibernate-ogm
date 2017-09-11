@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import com.mongodb.client.model.InsertManyOptions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.hibernate.AssertionFailure;
@@ -1175,12 +1174,10 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 	private static int doInsert(final MongoDBQueryDescriptor queryDesc, final MongoCollection<Document> collection) {
 		Document options = queryDesc.getOptions();
 		Boolean ordered = FALSE;
-		Boolean bypassDocumentValidation = null;
 		WriteConcern wc = null;
 		if ( options != null ) {
 			ordered = (Boolean) options.get( "ordered" );
 			ordered = ( ordered != null ) ? ordered : FALSE;
-			bypassDocumentValidation = (Boolean) options.get( "bypassDocumentValidation" );
 			Document o = (Document) options.get( "writeConcern" );
 			wc = getWriteConcern( o );
 		}
@@ -1190,11 +1187,10 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 		// is defined...)
 		List<InsertOneModel<Document>> operationList = null;
 		if ( queryDesc.getUpdateOrInsertMany() != null ) {
-			InsertManyOptions insertManyOptions = new InsertManyOptions().ordered( ordered ).bypassDocumentValidation(
-					bypassDocumentValidation );
-			collection.withWriteConcern( ( wc != null ? wc : collection.getWriteConcern() ) )
-					.insertMany( queryDesc.getUpdateOrInsertMany(), insertManyOptions );
-			return queryDesc.getUpdateOrInsertMany().size();
+			operationList = new ArrayList<>( queryDesc.getUpdateOrInsertMany().size() );
+			for ( Document doc : queryDesc.getUpdateOrInsertMany() ) {
+				operationList.add( new InsertOneModel<>( doc ) );
+			}
 		}
 		else {
 			operationList = new ArrayList<>( 1 );
