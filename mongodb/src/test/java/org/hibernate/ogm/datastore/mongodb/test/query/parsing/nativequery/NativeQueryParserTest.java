@@ -13,6 +13,7 @@ import org.hibernate.ogm.datastore.mongodb.query.parsing.nativequery.impl.Native
 import org.hibernate.ogm.datastore.mongodb.utils.DocumentUtil;
 import org.hibernate.ogm.utils.TestForIssue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.bson.Document;
@@ -260,6 +261,8 @@ public class NativeQueryParserTest {
 	}
 
 	@Test
+	@Ignore
+	//insertOne() method does not support 'ordered' option
 	public void shouldParseQueryInsertSingleDocumentAndOptions() {
 		NativeQueryParser parser = Parboiled.createParser( NativeQueryParser.class );
 		ParsingResult<MongoDBQueryDescriptorBuilder> run =  new RecoveringParseRunner<MongoDBQueryDescriptorBuilder>( parser.Query() )
