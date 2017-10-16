@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import org.hibernate.ogm.utils.jpa.OgmJpaTestCase;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -20,16 +21,31 @@ import static org.junit.Assert.assertEquals;
 
 public class PreUpdateTest extends OgmJpaTestCase {
 
+	private static final String INITIAL = "initial";
+	private static final String UPDATED = "updated";
+
+	private EntityManager em;
+
+	@Before
+	public void setUp() {
+		em = getFactory().createEntityManager();
+	}
+
+	@After
+	@Override
+	public void removeEntities() throws Exception {
+		em.getTransaction().begin();
+		em.remove( em.find( PreUpdatableBus.class, 1 ) );
+		em.getTransaction().commit();
+		em.close();
+	}
+
 	/**
 	 * Update an entity which uses a @PreUpdate annotated method
 	 * to set boolean field to 'true'.
 	 */
 	@Test
 	public void testFieldSetInPreUpdate() {
-		final String INITIAL = "initial";
-		final String UPDATED = "updated";
-
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 
 		PreUpdatableBus bus = new PreUpdatableBus();
@@ -66,16 +82,10 @@ public class PreUpdateTest extends OgmJpaTestCase {
 		assertTrue( bus.isPreUpdated() );
 
 		em.getTransaction().commit();
-
-		em.close();
 	}
 
 	@Test
 	public void testFieldSetInPreUpdateByListener() {
-		final String INITIAL = "initial";
-		final String UPDATED = "updated";
-
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 
 		PreUpdatableBus bus = new PreUpdatableBus();
@@ -111,20 +121,7 @@ public class PreUpdateTest extends OgmJpaTestCase {
 		assertTrue( bus.isPreUpdatedByListener() );
 
 		em.getTransaction().commit();
-
-		em.close();
 	}
-
-	@After
-	@Override
-	public void removeEntities() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
-		em.getTransaction().begin();
-		em.remove( em.find( PreUpdatableBus.class, 1 ) );
-		em.getTransaction().commit();
-		em.close();
-	}
-
 
 	@Override
 	protected Class<?>[] getAnnotatedClasses() {

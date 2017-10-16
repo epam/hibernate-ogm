@@ -10,6 +10,8 @@ import javax.persistence.EntityManager;
 
 import org.hibernate.ogm.utils.jpa.OgmJpaTestCase;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -18,13 +20,24 @@ import static org.junit.Assert.assertFalse;
 
 public class PostRemoveTest extends OgmJpaTestCase {
 
+	private EntityManager em;
+
+	@Before
+	public void setUp() {
+		em = getFactory().createEntityManager();
+	}
+
+	@After
+	public void tearDown() {
+		em.close();
+	}
+
 	/**
 	 * Delete an entity which uses a @PostRemove annotated method
 	 * to set not persistent boolean field to 'true'.
 	 */
 	@Test
 	public void testFieldSetInPostRemove() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 		PostRemovableBus bus = new PostRemovableBus();
 		bus.setId( 1 );
@@ -47,12 +60,10 @@ public class PostRemoveTest extends OgmJpaTestCase {
 		// @PostRemove executed after the entity manager
 		// remove operation is actually executed or cascaded
 		assertTrue( bus.isPostRemoveInvoked() );
-		em.close();
 	}
 
 	@Test
 	public void testFieldSetInPostRemoveByListener() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 		PostRemovableBus bus = new PostRemovableBus();
 		bus.setId( 1 );
@@ -73,7 +84,6 @@ public class PostRemoveTest extends OgmJpaTestCase {
 		em.getTransaction().commit();
 
 		assertTrue( bus.isPostRemoveInvokedByListener() );
-		em.close();
 	}
 
 	@Override

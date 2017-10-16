@@ -10,6 +10,8 @@ import javax.persistence.EntityManager;
 
 import org.hibernate.ogm.utils.jpa.OgmJpaTestCase;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -18,13 +20,24 @@ import static org.junit.Assert.assertFalse;
 
 public class PreRemoveTest extends OgmJpaTestCase {
 
+	private EntityManager em;
+
+	@Before
+	public void setUp() {
+		em = getFactory().createEntityManager();
+	}
+
+	@After
+	public void tearDown() {
+		em.close();
+	}
+
 	/**
 	 * Delete an entity which uses a @PreRemove annotated method
 	 * to set not persistent boolean field to 'true'.
 	 */
 	@Test
 	public void testFieldSetInPreRemove() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 		PreRemovableBus bus = new PreRemovableBus();
 		bus.setId( 1 );
@@ -45,12 +58,10 @@ public class PreRemoveTest extends OgmJpaTestCase {
 		assertTrue( bus.isPreRemoveInvoked() );
 
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Test
 	public void testFieldSetInPreRemoveByListener() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 		PreRemovableBus bus = new PreRemovableBus();
 		bus.setId( 1 );
@@ -69,7 +80,6 @@ public class PreRemoveTest extends OgmJpaTestCase {
 		assertTrue( bus.isPreRemoveInvokedByListener() );
 
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Override

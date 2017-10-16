@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import org.hibernate.ogm.utils.jpa.OgmJpaTestCase;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -20,16 +21,31 @@ import static org.junit.Assert.assertTrue;
 
 public class PostUpdateTest extends OgmJpaTestCase {
 
+	private static final String INITIAL = "initial";
+	private static final String UPDATED = "updated";
+
+	private EntityManager em;
+
+	@Before
+	public void setUp() {
+		em = getFactory().createEntityManager();
+	}
+
+	@After
+	@Override
+	public void removeEntities() throws Exception {
+		em.getTransaction().begin();
+		em.remove( em.find( PostUpdatableBus.class, 1 ) );
+		em.getTransaction().commit();
+		em.close();
+	}
+
 	/**
 	 * Update an entity which uses a @PostUpdate annotated method
 	 * to set boolean field to 'true'.
 	 */
 	@Test
 	public void testFieldSetInPostUpdate() {
-		final String INITIAL = "initial";
-		final String UPDATED = "updated";
-
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 
 		PostUpdatableBus bus = new PostUpdatableBus();
@@ -47,12 +63,11 @@ public class PostUpdateTest extends OgmJpaTestCase {
 		assertNotNull( bus );
 		assertEquals( bus.getField(), INITIAL );
 		assertFalse( bus.isPostUpdated() );
-
 		bus.setField( UPDATED );
+
 		em.getTransaction().commit();
 
 		assertTrue( bus.isPostUpdated() );
-
 		em.clear();
 
 		em.getTransaction().begin();
@@ -64,16 +79,10 @@ public class PostUpdateTest extends OgmJpaTestCase {
 		assertFalse( bus.isPostUpdated() );
 
 		em.getTransaction().commit();
-
-		em.close();
 	}
 
 	@Test
 	public void testFieldSetInPostUpdateByListener() {
-		final String INITIAL = "initial";
-		final String UPDATED = "updated";
-
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 
 		PostUpdatableBus bus = new PostUpdatableBus();
@@ -107,20 +116,7 @@ public class PostUpdateTest extends OgmJpaTestCase {
 		assertFalse( bus.isPostUpdatedByListener() );
 
 		em.getTransaction().commit();
-
-		em.close();
 	}
-
-	@After
-	@Override
-	public void removeEntities() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
-		em.getTransaction().begin();
-		em.remove( em.find( PostUpdatableBus.class, 1 ) );
-		em.getTransaction().commit();
-		em.close();
-	}
-
 
 	@Override
 	protected Class<?>[] getAnnotatedClasses() {

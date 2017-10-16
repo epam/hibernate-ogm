@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import org.hibernate.ogm.utils.jpa.OgmJpaTestCase;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -19,13 +20,28 @@ import static org.junit.Assert.assertFalse;
 
 public class PostPersistTest extends OgmJpaTestCase {
 
+	private EntityManager em;
+
+	@Before
+	public void setUp() {
+		em = getFactory().createEntityManager();
+	}
+
+	@After
+	@Override
+	public void removeEntities() throws Exception {
+		em.getTransaction().begin();
+		em.remove( em.find( PostPersistableBus.class, 1 ) );
+		em.getTransaction().commit();
+		em.close();
+	}
+
 	/**
 	 * Insert an entity which uses a @PostPersist annotated method
 	 * to set not persistent boolean field to 'true'.
 	 */
 	@Test
 	public void testFieldSetInPostPersist() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 
 		PostPersistableBus bus = new PostPersistableBus();
@@ -51,12 +67,10 @@ public class PostPersistTest extends OgmJpaTestCase {
 		assertNotNull( bus );
 
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Test
 	public void testFieldSetInPostPersistByListener() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
 		em.getTransaction().begin();
 
 		PostPersistableBus bus = new PostPersistableBus();
@@ -80,17 +94,6 @@ public class PostPersistTest extends OgmJpaTestCase {
 		assertNotNull( bus );
 
 		em.getTransaction().commit();
-		em.close();
-	}
-
-	@After
-	@Override
-	public void removeEntities() throws Exception {
-		EntityManager em = getFactory().createEntityManager();
-		em.getTransaction().begin();
-		em.remove( em.find( PostPersistableBus.class, 1 ) );
-		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Override
