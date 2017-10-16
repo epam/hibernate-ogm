@@ -7,13 +7,13 @@
 package org.hibernate.ogm.datastore.mongodb.query.parsing.nativequery.impl;
 
 import org.hibernate.ogm.datastore.mongodb.query.impl.MongoDBQueryDescriptor.Operation;
+
+import com.mongodb.util.JSON;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressNode;
 import org.parboiled.annotations.SuppressSubnodes;
-
-import com.mongodb.util.JSON;
 
 /**
  * A parser for MongoDB queries which can be given in one of the following representations:
@@ -96,7 +96,10 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 	}
 
 	public Rule Reserved() {
-		return FirstOf( Find(), FindOne(), FindAndModify(), Insert(), InsertOne(), InsertMany(), Remove(), DeleteOne(), Update(), UpdateOne(), UpdateMany(), Count(), Aggregate(), Distinct(), MapReduce() );
+		return FirstOf(
+				Find(), FindOne(), FindAndModify(), Insert(), InsertOne(), InsertMany(), Remove(), DeleteOne(),
+				Update(), UpdateOne(), UpdateMany(), Count(), Aggregate(), Distinct(), MapReduce()
+		);
 		// TODO There are many more query types than what we support.
 	}
 
