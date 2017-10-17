@@ -1289,8 +1289,7 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 					.upsert( ( upsert != null ? upsert : false ) )
 					.projection( fields )
 					.returnDocument( ( returnNewDocument != null ? returnNewDocument : false ) ?
-											 ReturnDocument.AFTER :
-											 ReturnDocument.BEFORE )
+											ReturnDocument.AFTER : ReturnDocument.BEFORE )
 					.maxTime( 0, TimeUnit.MILLISECONDS );
 			theOne = collection.withWriteConcern( ( wc != null ? wc : collection.getWriteConcern() ) ).findOneAndUpdate(
 					query,

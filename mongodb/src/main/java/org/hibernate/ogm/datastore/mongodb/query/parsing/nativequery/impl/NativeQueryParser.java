@@ -396,10 +396,10 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 	@SuppressSubnodes
 	public Rule BsonFunctionCall() {
 		return Sequence( Optional( "new " ), SupportedBsonFunction(), ZeroOrMore( WhiteSpace() ), "( ",
-						 FirstOf(
-								 Sequence( PrimitiveValue(), ZeroOrMore( Sequence( ", ", PrimitiveValue() ) ) ),
-								 Optional( PrimitiveValue() )
-						 )
+							FirstOf(
+								Sequence( PrimitiveValue(), ZeroOrMore( Sequence( ", ", PrimitiveValue() ) ) ),
+								Optional( PrimitiveValue() )
+							)
 				, ") "
 		);
 	}
