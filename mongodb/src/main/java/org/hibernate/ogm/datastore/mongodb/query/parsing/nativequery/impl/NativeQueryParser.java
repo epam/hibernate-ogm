@@ -308,18 +308,20 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptor> {
 	}
 
 	public Rule PathExpression() {
-		return Sequence( Identifier(), ZeroOrMore( Separator(), Identifier() ) );
+		return Sequence( IdentiferInPath(), ZeroOrMore( Separator(), IdentiferInPath() ) );
+	}
+
+	public Rule IdentiferInPath() {
+		return Sequence( Identifier(), cliQueryInfo.pathExpression.add( match().trim() ) );
 	}
 
 	@SuppressSubnodes
 	public Rule Identifier() {
 		return Sequence(
-				Sequence(
-					FirstOf( SpecialIdentifierCharacter(), Letter()),
-					ZeroOrMore( FirstOf( SpecialIdentifierCharacter(), Letter(), Digit() ))
-				),
-				cliQueryInfo.pathExpression.add( match() )
-				);
+				FirstOf( SpecialIdentifierCharacter(), Letter()),
+				ZeroOrMore( FirstOf( SpecialIdentifierCharacter(), Letter(), Digit() )),
+				ZeroOrMore( WhiteSpace() )
+		);
 	}
 
 	public Rule Arguments() {
