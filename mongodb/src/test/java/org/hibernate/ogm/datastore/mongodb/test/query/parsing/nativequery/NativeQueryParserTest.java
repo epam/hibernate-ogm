@@ -192,6 +192,21 @@ public class NativeQueryParserTest {
 	}
 
 	@Test
+	public void shouldParseObjectsWithNoQuotesInKeys() {
+		NativeQueryParser parser = Parboiled.createParser( NativeQueryParser.class );
+		ParsingResult<MongoDBQueryDescriptor> run = new RecoveringParseRunner<MongoDBQueryDescriptor>( parser.Query() )
+				.run( "{ $and: [ { name : 'Portia' }, { author : 'Oscar Wilde' } ] }" );
+
+		MongoDBQueryDescriptor queryDescriptor = run.resultValue;
+
+		assertThat( queryDescriptor.getCollectionName() ).isNull();
+		assertThat( queryDescriptor.getOperation() ).isEqualTo( Operation.FIND );
+		assertThat( queryDescriptor.getCriteria() ).isEqualTo( Document.parse( "{ $and: [ { name : 'Portia' }, { author : 'Oscar Wilde' } ] }" ) );
+		assertThat( queryDescriptor.getProjection() ).isNull();
+		assertThat( queryDescriptor.getOrderBy() ).isNull();
+	}
+
+	@Test
 	public void shouldParseSimpleQuery() {
 		NativeQueryParser parser = Parboiled.createParser( NativeQueryParser.class );
 		ParsingResult<MongoDBQueryDescriptor> run = new RecoveringParseRunner<MongoDBQueryDescriptor>( parser.Query() )

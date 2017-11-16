@@ -360,7 +360,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptor> {
 	}
 
 	public Rule Pair() {
-		return Sequence( JsonString(), ": ", Value() );
+		return Sequence( FirstOf( JsonString(), Identifier() ) , ": ", Value() );
 	}
 
 	public Rule Value() {
