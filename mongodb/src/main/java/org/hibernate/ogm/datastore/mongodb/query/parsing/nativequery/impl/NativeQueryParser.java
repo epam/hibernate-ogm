@@ -314,7 +314,10 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptor> {
 	@SuppressSubnodes
 	public Rule Identifier() {
 		return Sequence(
-				OneOrMore( FirstOf( Letter(), Digit() ) ),
+				Sequence(
+					FirstOf( SpecialIdentifierCharacter(), Letter()),
+					ZeroOrMore( FirstOf( SpecialIdentifierCharacter(), Letter(), Digit() ))
+				),
 				cliQueryInfo.pathExpression.add( match() )
 				);
 	}
@@ -443,6 +446,9 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptor> {
 
 	public Rule Letter() {
 		return FirstOf( CharRange( 'a', 'z' ), CharRange( 'A', 'Z' ) );
+	}
+	public Rule SpecialIdentifierCharacter() {
+		return FirstOf( '$', '_' );
 	}
 
 	public Rule EscapedChar() {
