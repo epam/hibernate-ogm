@@ -68,10 +68,10 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 	}
 
 	public Rule Query() {
-		return Sequence( Optional( QueryCliOrSimple() ), push( builder ) );
+		return Sequence( Optional( CliQueryOrJsonFindQuery() ), push( builder ) );
 	}
 
-	public Rule QueryCliOrSimple() {
+	public Rule CliQueryOrJsonFindQuery() {
 		return Sequence( FirstOf( ParsedQuery(), CriteriaOnlyFindQuery() ), builder.setQueryValid( true ), EOI );
 	}
 
@@ -85,8 +85,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 	 * @return the {@link Rule} to identify a find query only
 	 */
 	public Rule CriteriaOnlyFindQuery() {
-		return Sequence( !builder.isCliQuery(), JsonObject() , builder.setOperation( Operation.FIND ), builder.setCriteria( match() )
-		);
+		return Sequence( !builder.isCliQuery(), JsonObject() , builder.setOperation( Operation.FIND ), builder.setCriteria( match() ) );
 	}
 
 
@@ -154,7 +153,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				JsonObject(), builder.setCriteria( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setProjection( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -166,7 +165,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				Optional( JsonObject(), builder.setCriteria( match() ) ),
 				Optional( Sequence( ", ", JsonObject(), builder.setProjection( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -177,7 +176,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				builder.setOperation( Operation.FINDANDMODIFY ),
 				"( ",
 				JsonObject(), builder.setCriteria( match() ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -189,7 +188,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				JsonComposite(), builder.setUpdateOrInsert( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -201,7 +200,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				JsonComposite(), builder.setUpdateOrInsert( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -213,7 +212,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				JsonComposite(), builder.setUpdateOrInsert( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -230,7 +229,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 						Sequence( JsonObject(), builder.setOptions( match() ) )
 					)
 				) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -241,7 +240,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				JsonObject(), builder.setCriteria( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -252,7 +251,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				JsonObject(), builder.setCriteria( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -265,7 +264,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				JsonObject(), builder.setCriteria( match() ), ", ",
 				JsonObject(), builder.setUpdateOrInsert( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -277,7 +276,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				JsonObject(), builder.setCriteria( match() ), ", ",
 				JsonObject(), builder.setUpdateOrInsert( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -290,7 +289,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				JsonObject(), builder.setCriteria( match() ), ", ",
 				JsonObject(), builder.setUpdateOrInsert( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -303,7 +302,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				JsonObject(), builder.setCriteria( match() ), ", ",
 				JsonObject(), builder.setUpdateOrInsert( match() ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -313,7 +312,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"aggregate ",
 				builder.setOperation( Operation.AGGREGATE_PIPELINE ),
 				"( ", AggregateArray(),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -346,7 +345,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				builder.setOperation( Operation.COUNT ),
 				"( ",
 				Optional( Sequence( JsonComposite(), builder.setCriteria( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -359,7 +358,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				Sequence( JsonString(), builder.setDistinctFieldName( readStringFromJson( match() ) ) ),
 				Optional( Sequence( ", ", JsonObject(), builder.setCriteria( match() ) ) ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -372,7 +371,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				Sequence( JsonString(), builder.setMapFunction( readStringFromJson( match() ) ) ),
 				Sequence( ", ", JsonString(), builder.setReduceFunction( readStringFromJson( match() ) ) ),
 				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
-				builder.setEveryParameterIsValid( true ),
+				builder.setParametersValid( true ),
 				") "
 		);
 	}
@@ -392,7 +391,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				).suppressNode(),
 				"} "
 			),
-			Sequence( ZeroOrMore( ANY ), builder.setInvalidJsonInPrefix( match() ), ACTION( false )  )
+			Sequence( ZeroOrMore( ANY ), builder.setInvalidJsonParameter( match() ), ACTION( false )  )
 		);
 	}
 
