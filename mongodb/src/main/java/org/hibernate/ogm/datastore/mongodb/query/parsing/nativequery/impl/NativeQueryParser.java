@@ -85,7 +85,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 	 * @return the {@link Rule} to identify a find query only
 	 */
 	public Rule CriteriaOnlyFindQuery() {
-		return Sequence( !builder.isCliQuery(), JsonObject() , builder.setOperation( Operation.FIND ), builder.setCriteria( match() ) );
+		return Sequence( !builder.isCliQuery(), JsonParameter( JsonObject() ) , builder.setOperation( Operation.FIND ), builder.setCriteria( match() ) );
 	}
 
 
@@ -151,8 +151,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"find ",
 				builder.setOperation( Operation.FIND ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setProjection( match() ) ) ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setProjection( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -163,8 +163,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"findOne ",
 				builder.setOperation( Operation.FINDONE ),
 				"( ",
-				Optional( JsonObject(), builder.setCriteria( match() ) ),
-				Optional( Sequence( ", ", JsonObject(), builder.setProjection( match() ) ) ),
+				Optional( JsonParameter( JsonObject() ), builder.setCriteria( match() ) ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setProjection( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -175,7 +175,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"findAndModify ",
 				builder.setOperation( Operation.FINDANDMODIFY ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -186,8 +186,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"insert ",
 				builder.setOperation( Operation.INSERT ),
 				"( ",
-				JsonComposite(), builder.setUpdateOrInsert( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonComposite() ), builder.setUpdateOrInsert( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -198,8 +198,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"insertOne ",
 				builder.setOperation( Operation.INSERTONE ),
 				"( ",
-				JsonComposite(), builder.setUpdateOrInsert( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonComposite() ), builder.setUpdateOrInsert( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -210,8 +210,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"insertMany ",
 				builder.setOperation( Operation.INSERTMANY ),
 				"( ",
-				JsonComposite(), builder.setUpdateOrInsert( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonComposite() ), builder.setUpdateOrInsert( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -222,11 +222,11 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"remove ",
 				builder.setOperation( Operation.REMOVE ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ),
 				Optional( Sequence( ", ",
 					FirstOf(
 						Sequence( BooleanValue(), builder.setOptions( "{ 'justOne': " + match() + " }" ) ),
-						Sequence( JsonObject(), builder.setOptions( match() ) )
+						Sequence( JsonParameter( JsonObject() ), builder.setOptions( match() ) )
 					)
 				) ),
 				builder.setParametersValid( true ),
@@ -238,8 +238,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"deleteOne ",
 				builder.setOperation( Operation.DELETEONE ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -249,8 +249,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"deleteMany ",
 				builder.setOperation( Operation.DELETEMANY ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -261,9 +261,9 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"update ",
 				builder.setOperation( Operation.UPDATE ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ), ", ",
-				JsonObject(), builder.setUpdateOrInsert( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ), ", ",
+				JsonParameter( JsonObject() ), builder.setUpdateOrInsert( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -273,9 +273,9 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"updateOne ",
 				builder.setOperation( Operation.UPDATEONE ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ), ", ",
-				JsonObject(), builder.setUpdateOrInsert( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ), ", ",
+				JsonParameter( JsonObject() ), builder.setUpdateOrInsert( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -286,9 +286,9 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"updateMany ",
 				builder.setOperation( Operation.UPDATEMANY ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ), ", ",
-				JsonObject(), builder.setUpdateOrInsert( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ), ", ",
+				JsonParameter( JsonObject() ), builder.setUpdateOrInsert( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -299,9 +299,9 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"replaceOne ",
 				builder.setOperation( Operation.REPLACEONE ),
 				"( ",
-				JsonObject(), builder.setCriteria( match() ), ", ",
-				JsonObject(), builder.setUpdateOrInsert( match() ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				JsonParameter( JsonObject() ), builder.setCriteria( match() ), ", ",
+				JsonParameter( JsonObject() ), builder.setUpdateOrInsert( match() ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -344,7 +344,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"count ",
 				builder.setOperation( Operation.COUNT ),
 				"( ",
-				Optional( Sequence( JsonComposite(), builder.setCriteria( match() ) ) ),
+				Optional( Sequence( JsonParameter( JsonComposite() ), builder.setCriteria( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -356,8 +356,8 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				builder.setOperation( Operation.DISTINCT ),
 				"( ",
 				Sequence( JsonString(), builder.setDistinctFieldName( readStringFromJson( match() ) ) ),
-				Optional( Sequence( ", ", JsonObject(), builder.setCriteria( match() ) ) ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setCriteria( match() ) ) ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
 		);
@@ -370,9 +370,16 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 				"( ",
 				Sequence( JsonString(), builder.setMapFunction( readStringFromJson( match() ) ) ),
 				Sequence( ", ", JsonString(), builder.setReduceFunction( readStringFromJson( match() ) ) ),
-				Optional( Sequence( ", ", JsonObject(), builder.setOptions( match() ) ) ),
+				Optional( Sequence( ", ", JsonParameter( JsonObject() ), builder.setOptions( match() ) ) ),
 				builder.setParametersValid( true ),
 				") "
+		);
+	}
+
+	public Rule JsonParameter(Rule Parameter) {
+		return FirstOf(
+				Parameter,
+				Sequence( ZeroOrMore( ANY ), builder.setInvalidJsonParameter( match() ), ACTION( false )  )
 		);
 	}
 
@@ -381,8 +388,7 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 	}
 
 	public Rule JsonObject() {
-		return FirstOf(
-			Sequence(
+		return Sequence(
 				ZeroOrMore( WhiteSpace() ).skipNode(),
 				"{ ",
 				FirstOf(
@@ -390,8 +396,6 @@ public class NativeQueryParser extends BaseParser<MongoDBQueryDescriptorBuilder>
 						Optional( Pair() )
 				).suppressNode(),
 				"} "
-			),
-			Sequence( ZeroOrMore( ANY ), builder.setInvalidJsonParameter( match() ), ACTION( false )  )
 		);
 	}
 
