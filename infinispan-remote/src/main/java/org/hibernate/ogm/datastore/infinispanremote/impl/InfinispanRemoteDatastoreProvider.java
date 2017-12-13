@@ -6,6 +6,7 @@
  */
 package org.hibernate.ogm.datastore.infinispanremote.impl;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -20,7 +21,6 @@ import org.hibernate.ogm.datastore.infinispanremote.impl.schema.SequenceTableDef
 import org.hibernate.ogm.datastore.infinispanremote.impl.sequences.HotRodSequenceHandler;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.Log;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.LoggerFactory;
-import java.lang.invoke.MethodHandles;
 import org.hibernate.ogm.datastore.infinispanremote.schema.spi.SchemaCapture;
 import org.hibernate.ogm.datastore.infinispanremote.schema.spi.SchemaOverride;
 import org.hibernate.ogm.datastore.spi.BaseDatastoreProvider;
@@ -32,6 +32,7 @@ import org.hibernate.service.spi.ServiceRegistryAwareService;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.service.spi.Startable;
 import org.hibernate.service.spi.Stoppable;
+
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.protostream.SerializationContext;
@@ -151,16 +152,29 @@ public class InfinispanRemoteDatastoreProvider extends BaseDatastoreProvider
 			if ( cache == null && createCachesEnabled ) {
 				hotrodClient.administration().createCache( cacheName, cacheTemplate );
 				cache = hotrodClient.getCache( cacheName );
+				if ( cache == null ) {
+					failedCacheNames.add( cacheName );
+				}
 			}
-			if ( cache == null ) {
+			else if ( cache == null && !createCachesEnabled ) {
 				failedCacheNames.add( cacheName );
 			}
 		} );
-		if ( failedCacheNames.size() > 1 ) {
-			throw log.expectedCachesNotDefined( failedCacheNames );
+		if ( createCachesEnabled ) {
+			if ( failedCacheNames.size() > 1 ) {
+				throw log.expectedCachesNotCreated( failedCacheNames );
+			}
+			else if ( failedCacheNames.size() == 1 ) {
+				throw log.expectedCacheNotCreated( failedCacheNames.iterator().next()  );
+			}
 		}
-		else if ( failedCacheNames.size() == 1 ) {
-			throw log.expectedCacheNotDefined( failedCacheNames.iterator().next() );
+		else {
+			if ( failedCacheNames.size() > 1 ) {
+				throw log.expectedCachesNotDefined( failedCacheNames );
+			}
+			else if ( failedCacheNames.size() == 1 ) {
+				throw log.expectedCacheNotDefined( failedCacheNames.iterator().next() );
+			}
 		}
 	}
 

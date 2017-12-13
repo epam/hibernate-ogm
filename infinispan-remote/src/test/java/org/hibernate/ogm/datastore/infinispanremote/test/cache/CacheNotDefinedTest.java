@@ -10,23 +10,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hibernate.HibernateException;
-import org.hibernate.SessionFactory;
-import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.ogm.cfg.OgmProperties;
 import org.hibernate.ogm.datastore.infinispanremote.InfinispanRemoteProperties;
-import org.hibernate.ogm.datastore.infinispanremote.impl.InfinispanRemoteDatastoreProvider;
 import org.hibernate.ogm.datastore.infinispanremote.schema.spi.MapSchemaCapture;
 import org.hibernate.ogm.datastore.infinispanremote.utils.RemoteHotRodServerRule;
-import org.hibernate.ogm.datastore.spi.DatastoreProvider;
 import org.hibernate.ogm.utils.TestHelper;
 
-import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class NoTemplateTest {
+/**
+ * Test of startup with entity with not defined cache template
+ */
+public class CacheNotDefinedTest {
 
 	@ClassRule
 	public static final RemoteHotRodServerRule hotRodServer = new RemoteHotRodServerRule();
@@ -37,19 +35,11 @@ public class NoTemplateTest {
 	@Test
 	public void noTemplateTest() {
 		thrown.expect( HibernateException.class );
-		thrown.expectMessage( "OGM001709:" );
-		getDatastoreProvider( CacheEntity.class );
-	}
-
-	public static void getDatastoreProvider(Class<?> entity) {
+		thrown.expectMessage( "OGM001717:" );
 		Map<String, Object> settings = settings();
 		MapSchemaCapture schemaCapture = new MapSchemaCapture();
 		settings.put( InfinispanRemoteProperties.SCHEMA_CAPTURE_SERVICE, schemaCapture );
-		try ( SessionFactory sessionFactory = TestHelper.getDefaultTestSessionFactory( settings, entity ) ) {
-			InfinispanRemoteDatastoreProvider provider = (InfinispanRemoteDatastoreProvider) ( (SessionFactoryImplementor) sessionFactory )
-					.getServiceRegistry().getService( DatastoreProvider.class );
-			Assert.assertNotNull( provider.getCache( entity.getSimpleName() ) );
-		}
+		TestHelper.getDefaultTestSessionFactory( settings, EntityWithWrongTemplate.class );
 	}
 
 	public static Map<String, Object> settings() {

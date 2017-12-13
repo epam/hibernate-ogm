@@ -46,10 +46,6 @@ public final class RemoteHotRodServerRule extends org.junit.rules.ExternalResour
 
 	private final int portOffset;
 
-	private final String configPath;
-
-	private final String defaultConfigPath = "wildfly-trimmed-config.xml";
-
 	/**
 	 * Reference to the Hot Rod Server process. Access protected by synchronization on the static field "running".
 	 */
@@ -57,12 +53,6 @@ public final class RemoteHotRodServerRule extends org.junit.rules.ExternalResour
 
 	public RemoteHotRodServerRule() {
 		this.portOffset = 0;
-		this.configPath = defaultConfigPath;
-	}
-
-	public RemoteHotRodServerRule(String configPath) {
-		this.portOffset = 0;
-		this.configPath = configPath;
 	}
 
 	/**
@@ -71,7 +61,6 @@ public final class RemoteHotRodServerRule extends org.junit.rules.ExternalResour
 	 */
 	public RemoteHotRodServerRule(int portOffset) {
 		this.portOffset = portOffset;
-		this.configPath = defaultConfigPath;
 	}
 
 	@Override
@@ -84,7 +73,7 @@ public final class RemoteHotRodServerRule extends org.junit.rules.ExternalResour
 				StandaloneCommandBuilder builder = StandaloneCommandBuilder
 						.of( "target/node1/infinispan-server-" + InfinispanVersion );
 				builder
-					.setServerReadOnlyConfiguration( configPath );
+					.setServerReadOnlyConfiguration( "wildfly-trimmed-config.xml" );
 				if ( portOffset != 0 ) {
 					builder.addJavaOption( "-Djboss.socket.binding.port-offset=" + portOffset );
 				}

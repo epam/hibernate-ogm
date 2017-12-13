@@ -80,4 +80,10 @@ public interface Log extends org.hibernate.ogm.util.impl.Log {
 	@Message(id = 1716, value = "Error deploying Protobuf schema '%s' to the server: '%s'")
 	HibernateException errorAtSchemaDeploy(String generatedProtobufName, String remoteErrorMessage);
 
+	@Message(id = 1717, value = "The remote cache '%s' was not created")
+	HibernateException expectedCacheNotCreated(String cacheName);
+
+	@Message(id = 1718, value = "The remote caches '%s' was not created")
+	HibernateException expectedCachesNotCreated(@FormatWith(StringSetFormatter.class) Set<String> cacheNames);
+
 }

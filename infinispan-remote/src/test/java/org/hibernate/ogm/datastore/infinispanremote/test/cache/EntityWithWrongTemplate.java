@@ -14,8 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.ogm.datastore.infinispanremote.options.cache.CacheTemplate;
 
 @Entity
-@CacheTemplate("transactional_confg")
-public class CacheEntity {
+@CacheTemplate("wrong_template")
+public class EntityWithWrongTemplate {
 
 	private String id;
 
