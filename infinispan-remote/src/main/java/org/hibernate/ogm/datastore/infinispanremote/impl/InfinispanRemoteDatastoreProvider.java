@@ -6,6 +6,7 @@
  */
 package org.hibernate.ogm.datastore.infinispanremote.impl;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -20,7 +21,6 @@ import org.hibernate.ogm.datastore.infinispanremote.impl.schema.SequenceTableDef
 import org.hibernate.ogm.datastore.infinispanremote.impl.sequences.HotRodSequenceHandler;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.Log;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.LoggerFactory;
-import java.lang.invoke.MethodHandles;
 import org.hibernate.ogm.datastore.infinispanremote.schema.spi.SchemaCapture;
 import org.hibernate.ogm.datastore.infinispanremote.schema.spi.SchemaOverride;
 import org.hibernate.ogm.datastore.spi.BaseDatastoreProvider;
@@ -32,6 +32,7 @@ import org.hibernate.service.spi.ServiceRegistryAwareService;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.service.spi.Startable;
 import org.hibernate.service.spi.Stoppable;
+
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.infinispan.protostream.SerializationContext;
@@ -72,7 +73,7 @@ public class InfinispanRemoteDatastoreProvider extends BaseDatastoreProvider
 	private SchemaOverride schemaOverrideService;
 
 	@EffectivelyFinal
-	private Set<String> mappedCacheNames;
+	private Map<String, String> cacheTemplatesByName;
 
 	//For each cache we have a schema and a set of encoders/decoders to the generated protobuf schema
 	@EffectivelyFinal
@@ -136,33 +137,49 @@ public class InfinispanRemoteDatastoreProvider extends BaseDatastoreProvider
 		final String generatedProtobufName = "Hibernate_OGM_Generated_schema.proto";
 		sd.deploySchema( generatedProtobufName, protobufCache, schemaCapture, schemaOverrideService );
 		this.sequences = new HotRodSequenceHandler( this, marshaller, sd.getSequenceDefinitions() );
-		setMappedCacheNames( sd );
+		setCacheTemplatesByName( sd );
 		startAndValidateCaches();
 		perCacheSchemaMappers = sd.generateSchemaMappingAdapters( this, sd, marshaller );
 	}
 
 	private void startAndValidateCaches() {
 		Set<String> failedCacheNames = new TreeSet<String>();
-		mappedCacheNames.forEach( cacheName -> {
-			RemoteCache<?,?> cache = hotrodClient.getCache( cacheName );
+
+		cacheTemplatesByName.entrySet().forEach( entry -> {
+			String cacheName = entry.getKey();
+			String cacheTemplate = entry.getValue();
+			RemoteCache<?, ?> cache = hotrodClient.getCache( cacheName );
 			if ( cache == null && createCachesEnabled ) {
-				hotrodClient.administration().createCache( cacheName, null );
+				hotrodClient.administration().createCache( cacheName, cacheTemplate );
 				cache = hotrodClient.getCache( cacheName );
+				if ( cache == null ) {
+					failedCacheNames.add( cacheName );
+				}
 			}
-			if ( cache == null ) {
+			else if ( cache == null && !createCachesEnabled ) {
 				failedCacheNames.add( cacheName );
 			}
 		} );
-		if ( failedCacheNames.size() > 1 ) {
-			throw log.expectedCachesNotDefined( failedCacheNames );
+		if ( createCachesEnabled ) {
+			if ( failedCacheNames.size() > 1 ) {
+				throw log.expectedCachesNotCreated( failedCacheNames );
+			}
+			else if ( failedCacheNames.size() == 1 ) {
+				throw log.expectedCacheNotCreated( failedCacheNames.iterator().next()  );
+			}
 		}
-		else if ( failedCacheNames.size() == 1 ) {
-			throw log.expectedCacheNotDefined( failedCacheNames.iterator().next() );
+		else {
+			if ( failedCacheNames.size() > 1 ) {
+				throw log.expectedCachesNotDefined( failedCacheNames );
+			}
+			else if ( failedCacheNames.size() == 1 ) {
+				throw log.expectedCacheNotDefined( failedCacheNames.iterator().next() );
+			}
 		}
 	}
 
-	private void setMappedCacheNames(SchemaDefinitions sd) {
-		this.mappedCacheNames = sd.getTableNames();
+	private void setCacheTemplatesByName(SchemaDefinitions sd) {
+		this.cacheTemplatesByName = sd.getCacheTemplateByName();
 	}
 
 	private RemoteCache<String, String> getProtobufCache() {
@@ -179,8 +196,12 @@ public class InfinispanRemoteDatastoreProvider extends BaseDatastoreProvider
 		return schemaPackageName;
 	}
 
+	public Map<String, String> getCacheTemplatesByName() {
+		return cacheTemplatesByName;
+	}
+
 	public Set<String> getMappedCacheNames() {
-		return mappedCacheNames;
+		return cacheTemplatesByName.keySet();
 	}
 
 	public ProtoStreamMappingAdapter getDataMapperForCache(String cacheName) {
