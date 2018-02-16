@@ -7,7 +7,6 @@
 package org.hibernate.ogm.datastore.mongodb.test.mapping;
 
 import java.sql.Timestamp;
-import java.util.Random;
 import java.util.TimeZone;
 
 import org.hibernate.Session;
@@ -52,7 +51,7 @@ public class TimestampTypeMappingTest extends OgmTestCase {
 
 	// Timestamp type
 	@Test
-	public void testTimestampPersistedAsDateSupport() throws Exception {
+	public void testTimestampPersistedAsDateSupport() {
 		Timestamp creationDateAndTime = getTimestamp();
 		testEntity.setCreationDateAndTime( creationDateAndTime );
 
