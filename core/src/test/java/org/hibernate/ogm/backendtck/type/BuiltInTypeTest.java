@@ -6,12 +6,10 @@
  */
 package org.hibernate.ogm.backendtck.type;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -21,10 +19,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.ogm.backendtck.type.Bookmark.Classifier;
 import org.hibernate.ogm.utils.OgmTestCase;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Emmanuel Bernard &lt;emmanuel@hibernate.org&gt;
@@ -60,7 +62,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 
 	// basic types
 	@Test
-	public void testStringSupport() throws Exception {
+	public void testStringSupport() {
 		bookmark.setDescription( "Hibernate Site" );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -68,7 +70,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testCharacterSupport() throws Exception {
+	public void testCharacterSupport() {
 		bookmark.setDelimiter( '/' );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -76,7 +78,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testIntegerMaxValueSupport() throws Exception {
+	public void testIntegerMaxValueSupport() {
 		bookmark.setStockCount( Integer.MAX_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -84,7 +86,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testIntegerMinValueSupport() throws Exception {
+	public void testIntegerMinValueSupport() {
 		bookmark.setStockCount( Integer.MIN_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -92,7 +94,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testIntegerSupport() throws Exception {
+	public void testIntegerSupport() {
 		bookmark.setStockCount( 567 );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -100,7 +102,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testShortSupport() throws Exception {
+	public void testShortSupport() {
 		bookmark.setUrlPort( (short) 80 );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -108,7 +110,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testLongMaxValueSupport() throws Exception {
+	public void testLongMaxValueSupport() {
 		bookmark.setUserId( Long.MAX_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -116,7 +118,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testLongMinValueSupport() throws Exception {
+	public void testLongMinValueSupport() {
 		bookmark.setUserId( Long.MIN_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -124,7 +126,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testLongSupport() throws Exception {
+	public void testLongSupport() {
 		bookmark.setUserId( 12L );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -132,7 +134,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testFloatMaxValueSupport() throws Exception {
+	public void testFloatMaxValueSupport() {
 		bookmark.setVisitRatio( Float.MAX_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -140,7 +142,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testFloatMinValueSupport() throws Exception {
+	public void testFloatMinValueSupport() {
 		bookmark.setVisitRatio( Float.MIN_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -148,7 +150,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testFloatSupport() throws Exception {
+	public void testFloatSupport() {
 		bookmark.setVisitRatio( (float) 10.4 );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -156,7 +158,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testDoubleMaxValueSupport() throws Exception {
+	public void testDoubleMaxValueSupport() {
 		bookmark.setTaxPercentage( Double.MAX_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -164,7 +166,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testDoubleMinValueSupport() throws Exception {
+	public void testDoubleMinValueSupport() {
 		bookmark.setTaxPercentage( Double.MIN_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -172,7 +174,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testDoubleSupport() throws Exception {
+	public void testDoubleSupport() {
 		bookmark.setTaxPercentage( 12.34d );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -180,7 +182,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testBooleanSupport() throws Exception {
+	public void testBooleanSupport() {
 		bookmark.setFavourite( Boolean.TRUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -188,7 +190,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testTrueFalseMappedBooleanSupport() throws Exception {
+	public void testTrueFalseMappedBooleanSupport() {
 		bookmark.setPrivate( true );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -196,7 +198,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testYesNoMappedBooleanSupport() throws Exception {
+	public void testYesNoMappedBooleanSupport() {
 		bookmark.setRead( true );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -204,7 +206,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testNumericallyMappedBooleanSupport() throws Exception {
+	public void testNumericallyMappedBooleanSupport() {
 		bookmark.setShared( true );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -212,7 +214,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testByteSupport() throws Exception {
+	public void testByteSupport() {
 		bookmark.setDisplayMask( (byte) '8' );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -221,7 +223,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 
 	// byte arrays
 	@Test
-	public void testByteArrayAsLobSupport() throws Exception {
+	public void testByteArrayAsLobSupport() {
 		byte[] testData = "akshd aflasfukpao p43o5jpt jg ;sdj;dsaljg;0s=-34 '[sfk;flj s' [s[43u '#[s fpi'psfj;fds# s#s soj jfs \'kgs;".getBytes();
 		bookmark.setLob( testData );
 
@@ -230,15 +232,15 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testLongAsLobSupport() throws Exception {
+	public void testLongAsLobSupport() {
 		bookmark.setLobWithLong( Long.MIN_VALUE );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
-		assertEquals( "Original and loaded data do not match!", (Long) Long.MIN_VALUE, (Long) loadedBookmark.getLobWithLong() );
+		assertEquals( "Original and loaded data do not match!", (Long) Long.MIN_VALUE, loadedBookmark.getLobWithLong() );
 	}
 
 	@Test
-	public void testStringAsLobSupport() throws Exception {
+	public void testStringAsLobSupport() {
 		String text = "Very long text ...";
 		bookmark.setLobWithString( text );
 
@@ -247,7 +249,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testByteArraySupport() throws Exception {
+	public void testByteArraySupport() {
 		byte[] testData = "slfhs;lafksa ;fi jewe a;u r9032ur t'-)_$U lkajds lf3022- 752 -9372-32 s;d'gd #fs'g# s;".getBytes();
 		bookmark.setData( testData );
 
@@ -257,7 +259,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 
 	// enum types
 	@Test
-	public void testEnumTypeMappedAsStringSupport() throws Exception {
+	public void testEnumTypeMappedAsStringSupport() {
 		bookmark.setClassifier( Classifier.HOME );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -267,7 +269,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testEnumTypeMappedAsOrdinalSupport() throws Exception {
+	public void testEnumTypeMappedAsOrdinalSupport() {
 		bookmark.setClassifierAsOrdinal( Classifier.WORK );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -279,7 +281,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 
 	// Date/time types
 	@Test
-	public void testDatePersistedAsTemporalTypeDateSupport() throws Exception {
+	public void testDatePersistedAsTemporalTypeDateSupport() {
 		Date creationDate = new Date();
 		bookmark.setCreationDate( creationDate );
 
@@ -304,7 +306,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testDatePersistedAsTemporalTypeTimeSupport() throws Exception {
+	public void testDatePersistedAsTemporalTypeTimeSupport() {
 		Date updateTime = new Date();
 		bookmark.setUpdateTime( updateTime );
 
@@ -329,7 +331,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testDatePersistedAsTemporalTypeTimestampSupport() throws Exception {
+	public void testDatePersistedAsTemporalTypeTimestampSupport() {
 		Date destructionDate = new Date();
 		bookmark.setDestructionDate( destructionDate );
 
@@ -339,7 +341,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testCalendarTemporalTypeTimestampSupport() throws Exception {
+	public void testCalendarTemporalTypeTimestampSupport() {
 		bookmark.setDestructionCalendar( Calendar.getInstance() );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -351,7 +353,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testCalendarPersistedAsTemporalTypeDateSupport() throws Exception {
+	public void testCalendarPersistedAsTemporalTypeDateSupport() {
 		Calendar creationCalendar = Calendar.getInstance();
 		bookmark.setCreationCalendar( creationCalendar );
 
@@ -374,6 +376,16 @@ public class BuiltInTypeTest extends OgmTestCase {
 		assertEquals( "Time zones doe not match", expectedTimeZoneOffset, actualTimeZoneOffset );
 	}
 
+	@Test
+	public void testTimestampSupport() {
+		Timestamp creationDateAndTime = getTimestamp();
+		bookmark.setCreationDateAndTime( creationDateAndTime );
+
+		Bookmark bookmark = saveAndGet( this.bookmark );
+		Timestamp loadedCreationDate = bookmark.getCreationDateAndTime();
+
+		assertEquals( "Timestamps does not match", creationDateAndTime, loadedCreationDate );
+	}
 	// Misc
 	@Test
 	public void testURLSupport() throws Exception {
@@ -384,7 +396,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testUUIDSupport() throws Exception {
+	public void testUUIDSupport() {
 		UUID serialNumber = UUID.randomUUID();
 		bookmark.setSerialNumber( serialNumber );
 
@@ -393,7 +405,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testBigDecimalSupport() throws Exception {
+	public void testBigDecimalSupport() {
 		bookmark.setSiteWeight( new BigDecimal( "21.77" ) );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -401,7 +413,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 	}
 
 	@Test
-	public void testBigIntegerSupport() throws Exception {
+	public void testBigIntegerSupport() {
 		bookmark.setVisitCount( new BigInteger( "444" ) );
 
 		Bookmark loadedBookmark = saveAndGet( bookmark );
@@ -419,7 +431,7 @@ public class BuiltInTypeTest extends OgmTestCase {
 
 		// get
 		transaction = session.beginTransaction();
-		Bookmark retrievedBookmark = (Bookmark) session.get( Bookmark.class, bookmark.getId() );
+		Bookmark retrievedBookmark = session.get( Bookmark.class, bookmark.getId() );
 		transaction.commit();
 		return retrievedBookmark;
 	}
@@ -429,5 +441,12 @@ public class BuiltInTypeTest extends OgmTestCase {
 		return new Class<?>[] {
 				Bookmark.class
 		};
+	}
+
+	private Timestamp getTimestamp() {
+		Timestamp timestamp = new Timestamp( System.currentTimeMillis() );
+//		Nanos are not supported in MongoDB, that's why they would be 0 always
+//		timestamp.setNanos( new Random().nextInt( 999999999 ) );
+		return timestamp;
 	}
 }

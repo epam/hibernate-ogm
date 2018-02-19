@@ -9,10 +9,10 @@ package org.hibernate.ogm.backendtck.type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -98,6 +98,8 @@ public class Bookmark {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar destructionCalendar;
+
+	private Timestamp creationDateAndTime;
 
 	// "special" types
 	private UUID serialNumber;
@@ -249,6 +251,14 @@ public class Bookmark {
 
 	public void setDestructionCalendar(Calendar destructionCalendar) {
 		this.destructionCalendar = destructionCalendar;
+	}
+
+	public Timestamp getCreationDateAndTime() {
+		return creationDateAndTime;
+	}
+
+	public void setCreationDateAndTime(Timestamp creationDateAndTime) {
+		this.creationDateAndTime = creationDateAndTime;
 	}
 
 	public byte[] getLob() {

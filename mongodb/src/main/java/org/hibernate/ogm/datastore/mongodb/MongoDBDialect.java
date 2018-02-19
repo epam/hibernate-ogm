@@ -6,10 +6,6 @@
  */
 package org.hibernate.ogm.datastore.mongodb;
 
-import static java.lang.Boolean.FALSE;
-import static org.hibernate.ogm.datastore.document.impl.DotPatternMapHelpers.getColumnSharedPrefixOfAssociatedEntityLink;
-import static org.hibernate.ogm.datastore.mongodb.dialect.impl.MongoHelpers.hasField;
-
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +21,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.hibernate.AssertionFailure;
 import org.hibernate.ogm.datastore.document.association.impl.DocumentHelpers;
 import org.hibernate.ogm.datastore.document.cfg.DocumentStoreProperties;
@@ -64,7 +58,6 @@ import org.hibernate.ogm.datastore.mongodb.type.impl.GeoMultiPointGridType;
 import org.hibernate.ogm.datastore.mongodb.type.impl.GeoMultiPolygonGridType;
 import org.hibernate.ogm.datastore.mongodb.type.impl.GeoPointGridType;
 import org.hibernate.ogm.datastore.mongodb.type.impl.GeoPolygonGridType;
-import org.hibernate.ogm.datastore.mongodb.type.impl.MongoTimestampGridType;
 import org.hibernate.ogm.datastore.mongodb.type.impl.ObjectIdGridType;
 import org.hibernate.ogm.datastore.mongodb.type.impl.SerializableAsBinaryGridType;
 import org.hibernate.ogm.datastore.mongodb.type.impl.StringAsObjectIdGridType;
@@ -121,10 +114,6 @@ import org.hibernate.type.MaterializedBlobType;
 import org.hibernate.type.SerializableToBlobType;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
-import org.parboiled.Parboiled;
-import org.parboiled.errors.ErrorUtils;
-import org.parboiled.parserunners.RecoveringParseRunner;
-import org.parboiled.support.ParsingResult;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
@@ -152,6 +141,16 @@ import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.parboiled.Parboiled;
+import org.parboiled.errors.ErrorUtils;
+import org.parboiled.parserunners.RecoveringParseRunner;
+import org.parboiled.support.ParsingResult;
+
+import static java.lang.Boolean.FALSE;
+import static org.hibernate.ogm.datastore.document.impl.DotPatternMapHelpers.getColumnSharedPrefixOfAssociatedEntityLink;
+import static org.hibernate.ogm.datastore.mongodb.dialect.impl.MongoHelpers.hasField;
 
 /**
  * Each Tuple entry is stored as a property in a MongoDB document.
@@ -785,9 +784,6 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 		if ( type == StandardBasicTypes.CALENDAR || type == StandardBasicTypes.CALENDAR_DATE ) {
 			return StringCalendarDateType.INSTANCE;
 		}
-		else if ( type == StandardBasicTypes.TIMESTAMP ) {
-			return MongoTimestampGridType.INSTANCE;
-		}
 		else if ( type == StandardBasicTypes.BINARY ) {
 			return BinaryAsBsonBinaryGridType.INSTANCE;
 		}
@@ -1015,7 +1011,7 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 		while ( cursor.hasNext() ) {
 			documents.add( cursor.next() );
 		}
-		MapTupleSnapshot snapshot = new MapTupleSnapshot( Collections.<String, Object>singletonMap( "n", documents ) );
+		MapTupleSnapshot snapshot = new MapTupleSnapshot( Collections.singletonMap( "n", documents ) );
 		return CollectionHelper.newClosableIterator( Collections.singletonList( new Tuple( snapshot, SnapshotType.UNKNOWN ) ) );
 	}
 
@@ -1092,7 +1088,7 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 			Document doc = cursor.next();
 			documents.put( doc.get( "_id" ), doc.get( "value" ) );
 		}
-		MapTupleSnapshot snapshot = new MapTupleSnapshot( Collections.<String, Object>singletonMap( "n", documents ) );
+		MapTupleSnapshot snapshot = new MapTupleSnapshot( Collections.singletonMap( "n", documents ) );
 		return CollectionHelper.newClosableIterator( Collections.singletonList( new Tuple( snapshot, SnapshotType.UNKNOWN ) ) );
 	}
 
@@ -1362,7 +1358,7 @@ public class MongoDBDialect extends BaseGridDialect implements QueryableGridDial
 
 	private static ClosableIterator<Tuple> doCount(MongoDBQueryDescriptor query, MongoCollection<Document> collection) {
 		long count = collection.count( query.getCriteria() );
-		MapTupleSnapshot snapshot = new MapTupleSnapshot( Collections.<String, Object>singletonMap( "n", count ) );
+		MapTupleSnapshot snapshot = new MapTupleSnapshot( Collections.singletonMap( "n", count ) );
 		return CollectionHelper.newClosableIterator( Collections.singletonList( new Tuple( snapshot, SnapshotType.UNKNOWN ) ) );
 	}
 
