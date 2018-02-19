@@ -6,6 +6,7 @@
  */
 package org.hibernate.ogm.type.descriptor.impl;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -22,7 +23,7 @@ public class TimestampDateTypeDescriptor extends DateTypeDescriptor {
 
 	@Override
 	public Date fromString(String string) {
-		return CalendarTimeZoneDateTimeTypeDescriptor.INSTANCE.fromString( string ).getTime();
+		return new Timestamp( CalendarTimeZoneDateTimeTypeDescriptor.INSTANCE.fromString( string ).getTime().getTime() );
 	}
 
 	@Override
@@ -43,5 +44,4 @@ public class TimestampDateTypeDescriptor extends DateTypeDescriptor {
 
 		return one.equals( another );
 	}
-
 }
