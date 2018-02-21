@@ -10,4 +10,17 @@ import javax.persistence.Entity;
 
 @Entity
 public class Truck extends BaseCar {
+//	protected UUID id;
+//
+//	@Id
+//	// @GeneratedValue  //<--tried this only this one as well
+//	@GeneratedValue(generator = "uuid")
+//	@GenericGenerator(name = "uuid", strategy = "uuid2")
+//	public UUID getId() {
+//		return id;
+//	}
+//
+//	public void setId(UUID id) {
+//		this.id = id;
+//	}
 }
