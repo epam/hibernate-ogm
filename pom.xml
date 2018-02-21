@@ -68,7 +68,9 @@
         <!-- Target version of WildFly (for testing and JipiJapa integration) -->
         <version.wildfly>11.0.0.Final</version.wildfly>
         <hibernateWildflyClassifier>wildfly-11-dist</hibernateWildflyClassifier>
-        <hibernate-orm.module.slot>main</hibernate-orm.module.slot>
+
+        <!-- This slot property is used by the modules project and the integration tests -->
+        <hibernate-search.module.slot>${hibernateSearchFamilyVersion}</hibernate-search.module.slot>
 
         <!-- Asciidoctor -->
         <hibernate-asciidoctor-theme.version>1.0.1.Final</hibernate-asciidoctor-theme.version>
@@ -341,8 +343,7 @@
                 <plugin>
                     <groupId>org.wildfly.build</groupId>
                     <artifactId>wildfly-server-provisioning-maven-plugin</artifactId>
-                    <!-- Do not use 1.2.4 nor 1.2.5 at the moment: regression! See http://lists.jboss.org/pipermail/wildfly-dev/2018-January/006325.html -->
-                    <version>1.2.0.Final</version>
+                    <version>1.2.7.Final</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-antrun-plugin</artifactId>
@@ -385,8 +386,8 @@
                         </tags>
                         <links>
                             <link>https://docs.oracle.com/javase/8/docs/api/</link>
-                            <link>http://docs.jboss.org/hibernate/orm/5.1/javadocs/</link>
-                            <link>http://docs.jboss.org/hibernate/search/5.6/api/</link>
+                            <link>http://docs.jboss.org/hibernate/orm/5.2/javadocs/</link>
+                            <link>http://docs.jboss.org/hibernate/search/5.9/api/</link>
                             <link>http://lucene.apache.org/core/5_5_4/core/</link>
                         </links>
                         <bottom>
@@ -781,6 +782,13 @@
                         <bindIp>${embeddedMongoDbBindIp}</bindIp>
                         <version>${embeddedMongoDbVersion}</version>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>de.flapdoodle.embed</groupId>
+                            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+                            <version>2.0.3</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.gmaven</groupId>

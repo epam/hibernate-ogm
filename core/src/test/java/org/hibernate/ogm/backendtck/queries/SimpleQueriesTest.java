@@ -7,10 +7,12 @@
 package org.hibernate.ogm.backendtck.queries;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hibernate.ogm.utils.GridDialectType.MONGODB;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_EMBEDDED;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_REMOTE;
 import static org.hibernate.ogm.utils.OgmAssertions.assertThat;
+import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +22,12 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.persistence.PersistenceException;
+
+import org.hamcrest.core.CombinableMatcher;
+import org.hamcrest.core.IsInstanceOf;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -32,7 +37,7 @@ import org.hibernate.ogm.utils.SkipByGridDialect;
 import org.hibernate.ogm.utils.TestForIssue;
 import org.hibernate.ogm.utils.TestHelper;
 import org.hibernate.ogm.utils.TestSessionFactory;
-import org.hibernate.resource.transaction.spi.TransactionStatus;
+import org.hibernate.query.Query;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -65,8 +70,13 @@ public class SimpleQueriesTest extends OgmTestCase {
 
 	@After
 	public void closeSession() {
-		if ( tx != null && tx.getStatus() == TransactionStatus.ACTIVE ) {
-			tx.commit();
+		if ( tx != null ) {
+			if ( tx.getRollbackOnly() ) {
+				tx.rollback();
+			}
+			else {
+				tx.commit();
+			}
 			tx = null;
 		}
 		if ( session != null ) {
@@ -93,8 +103,9 @@ public class SimpleQueriesTest extends OgmTestCase {
 
 	@Test
 	public void testFailingQuery() {
-		thrown.expect( HibernateException.class );
-		thrown.expectMessage( "OGM000024" );
+		thrown.expect( PersistenceException.class );
+		thrown.expectCause( new CombinableMatcher<Throwable>( hasMessage( startsWith( "OGM000024" ) ) )
+				.and( IsInstanceOf.instanceOf( HibernateException.class ) ) );
 		assertQuery( session, 4, session.createQuery( "from Object" ) ); // Illegal query
 	}
 

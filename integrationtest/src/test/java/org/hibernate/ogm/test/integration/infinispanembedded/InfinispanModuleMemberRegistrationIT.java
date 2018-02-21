@@ -4,7 +4,7 @@
  * License: GNU Lesser General Public License (LGPL), version 2.1 or later
  * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
-package org.hibernate.ogm.test.integration.infinispan;
+package org.hibernate.ogm.test.integration.infinispanembedded;
 
 import org.hibernate.ogm.test.integration.testcase.ModuleMemberRegistrationScenario;
 import org.hibernate.ogm.test.integration.testcase.util.ModuleMemberRegistrationDeployment;
@@ -29,8 +29,7 @@ public class InfinispanModuleMemberRegistrationIT extends ModuleMemberRegistrati
 			.Builder( InfinispanModuleMemberRegistrationIT.class )
 			.persistenceXml( persistenceXml() )
 			.manifestDependencies( "org.hibernate.ogm:${hibernate-ogm.module.slot} services, org.hibernate.ogm.infinispan-embedded:${hibernate-ogm.module.slot} services" )
-			.createDeployment()
-			.addAsResource( "infinispan.xml", "infinispan.xml" );
+			.createDeployment();
 	}
 
 	private static PersistenceDescriptor persistenceXml() {
@@ -41,7 +40,6 @@ public class InfinispanModuleMemberRegistrationIT extends ModuleMemberRegistrati
 				.provider( "org.hibernate.ogm.jpa.HibernateOgmPersistence" )
 				.getOrCreateProperties()
 				.createProperty().name( "hibernate.ogm.datastore.provider" ).value( "infinispan_embedded" ).up()
-				.createProperty().name( "hibernate.ogm.infinispan.configuration_resourcename" ).value( "infinispan.xml" ).up()
 				.createProperty().name( "hibernate.search.default.directory_provider" ).value( "ram" ).up()
 				.createProperty().name( "wildfly.jpa.hibernate.search.module" ).value( "org.hibernate.search.orm:${hibernate-search.module.slot}" ).up()
 			.up().up();

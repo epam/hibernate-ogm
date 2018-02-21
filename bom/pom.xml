@@ -27,7 +27,7 @@
             See http://search.maven.org/#search|gav|1|g%3A"org.wildfly"%20AND%20a%3A"wildfly-parent"
         -->
 
-        <hibernateCommonsAnnotationsVersion>5.0.1.Final</hibernateCommonsAnnotationsVersion>
+        <hibernateCommonsAnnotationsVersion>5.0.2.Final</hibernateCommonsAnnotationsVersion>
         <jbossLoggingVersion>3.3.0.Final</jbossLoggingVersion>
         <jbossLoggingProcessorVersion>2.0.2.Final</jbossLoggingProcessorVersion>
         <classmateVersion>1.3.3</classmateVersion>
@@ -40,32 +40,32 @@
         <narayanaVersion>5.5.30.Final</narayanaVersion>
 
         <!-- Hibernate ORM -->
-        <hibernateVersion>5.1.10.Final</hibernateVersion>
+        <hibernateOrmFamilyVersion>5.2</hibernateOrmFamilyVersion>
+        <hibernateVersion>5.2.13.Final</hibernateVersion>
 
         <!-- Hibernate Search -->
-        <hibernateSearchVersion>5.6.4.Final</hibernateSearchVersion>
-        <hibernate-search.module.slot>${hibernateSearchVersion}-orm51</hibernate-search.module.slot>
+        <hibernateSearchFamilyVersion>5.9</hibernateSearchFamilyVersion>
+        <hibernateSearchVersion>5.9.0.Final</hibernateSearchVersion>
 
         <!-- Careful: Lucene is shared across Neo4J dependencies, Infinispan and Hibernate Search -->
         <luceneVersion>5.5.5</luceneVersion>
 
         <!-- Various dependencies -->
-        <hibernateHqlParserVersion>1.4.0.Final</hibernateHqlParserVersion>
-        <hibernate.hql.module.slot>${hibernateHqlParserVersion}</hibernate.hql.module.slot>
+        <hibernateHqlParserVersion>1.5.0.Final</hibernateHqlParserVersion>
         <parboiledVersion>1.1.8</parboiledVersion> <!-- needs to be aligned with Neo4j version but is also used for MongoDB -->
         <asmVersion>5.2</asmVersion> <!-- used for Parboiled and Neo4j -->
 
         <!-- Infinispan -->
-        <infinispanVersion>9.1.5.Final</infinispanVersion>
+        <infinispanVersion>9.1.6.Final</infinispanVersion>
         <protostreamVersion>4.1.3.Final</protostreamVersion>
 
         <!-- MongoDB -->
-        <mongodbVersion>3.4.6</mongodbVersion>
-        <mongodbDriverVersion>3.6.2</mongodbDriverVersion>
+        <mongodbVersion>3.6.2</mongodbVersion>
+        <mongodbDriverVersion>3.6.3</mongodbDriverVersion>
 
         <!-- Neo4j -->
-        <neo4jVersion>3.3.2</neo4jVersion>
-        <neo4jJavaDriverVersion>1.5.0</neo4jJavaDriverVersion>
+        <neo4jVersion>3.3.3</neo4jVersion>
+        <neo4jJavaDriverVersion>1.5.1</neo4jJavaDriverVersion>
         <neo4jScalaLibraryVersion>2.11.11</neo4jScalaLibraryVersion>
         <!-- See Parboiled dependency above -->
         <!-- See Lucene dependency above -->
@@ -78,9 +78,9 @@
         <neo4jCaffeineVersion>2.3.3</neo4jCaffeineVersion>
         <!-- Neo4j supports different versions of Cypher -->
         <neo4jCypherCompiler33Version>${neo4jVersion}</neo4jCypherCompiler33Version>
-        <neo4jCypherCompiler32Version>3.2.8</neo4jCypherCompiler32Version>
+        <neo4jCypherCompiler32Version>3.2.9</neo4jCypherCompiler32Version>
         <neo4jCypherCompiler31Version>3.1.6</neo4jCypherCompiler31Version>
-        <neo4jCypherCompiler23Version>2.3.11</neo4jCypherCompiler23Version>
+        <neo4jCypherCompiler23Version>2.3.12</neo4jCypherCompiler23Version>
     </properties>
 
     <inceptionYear>2010</inceptionYear>

@@ -4,7 +4,7 @@
  * License: GNU Lesser General Public License (LGPL), version 2.1 or later
  * See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
  */
-package org.hibernate.ogm.test.integration.infinispan;
+package org.hibernate.ogm.test.integration.infinispanembedded;
 
 import org.hibernate.ogm.test.integration.testcase.MagiccardsDatabaseScenario;
 import org.hibernate.ogm.test.integration.testcase.controller.MagicCardsCollectionBean;
@@ -48,7 +48,6 @@ public class SearchIntegrationIT extends MagiccardsDatabaseScenario {
 					.getOrCreateProperties()
 						.createProperty().name( "hibernate.search.default.directory_provider" ).value( "ram" ).up()
 						.createProperty().name( "hibernate.ogm.datastore.provider" ).value( "infinispan_embedded" ).up()
-						.createProperty().name( "hibernate.ogm.infinispan.configuration_resourcename" ).value( "infinispan.xml" ).up()
 						.createProperty().name( "wildfly.jpa.hibernate.search.module" ).value( "org.hibernate.search.orm:${hibernate-search.module.slot}" ).up()
 				.up().up();
 	}

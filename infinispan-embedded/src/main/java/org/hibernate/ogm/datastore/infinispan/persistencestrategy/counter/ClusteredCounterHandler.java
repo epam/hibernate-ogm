@@ -13,7 +13,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.ogm.datastore.infinispan.logging.impl.Log;
 import org.hibernate.ogm.datastore.infinispan.logging.impl.LoggerFactory;
 import org.hibernate.ogm.dialect.spi.NextValueRequest;
-import org.hibernate.ogm.model.key.spi.IdSourceKeyMetadata;
 import org.infinispan.counter.EmbeddedCounterManagerFactory;
 import org.infinispan.counter.api.CounterConfiguration;
 import org.infinispan.counter.api.CounterManager;
@@ -23,14 +22,18 @@ import org.infinispan.counter.api.StrongCounter;
 import org.infinispan.manager.EmbeddedCacheManager;
 
 /**
- * @author Fabio Massimo Ercoli (C) 2017 Red Hat Inc.
+ * Provides access to Infinispan Clustered Counter feature.
+ * Used by the dialect to implement a reliable ID generator.
+ *
+ * @author Davide D'Alto
+ * @author Fabio Massimo Ercoli
  */
-public class ClusteredCounterCommand {
+public abstract class ClusteredCounterHandler {
 
 	private static final Log LOG = LoggerFactory.make( MethodHandles.lookup() );
-	private final EmbeddedCacheManager cacheManager;
+	protected final EmbeddedCacheManager cacheManager;
 
-	public ClusteredCounterCommand(EmbeddedCacheManager cacheManager) {
+	public ClusteredCounterHandler(EmbeddedCacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 		validate();
 	}
@@ -41,38 +44,34 @@ public class ClusteredCounterCommand {
 		}
 	}
 
-	public Number nextValue(NextValueRequest request) {
-
+	/**
+	 * Create a counter if one is not defined already, otherwise return the existing one.
+	 *
+	 * @param counterName unique name for the counter
+	 * @param initialValue initial value for the counter
+	 * @return a {@link StrongCounter}
+	 */
+	protected StrongCounter getCounterOrCreateIt(String counterName, int initialValue) {
 		CounterManager counterManager = EmbeddedCounterManagerFactory.asCounterManager( cacheManager );
-		String counterName = counterName( request );
-
 		if ( !counterManager.isDefined( counterName ) ) {
+			LOG.tracef( "Counter %s is not defined, creating it", counterName );
 
 			// global configuration is mandatory in order to define
-			// a clustered counter with persistent storage
+			// a new clustered counter with persistent storage
 			validateGlobalConfiguration();
 
-			// try to define new counter at runtime
-			boolean definedByCurrentThread = counterManager.defineCounter( counterName,
-				CounterConfiguration.builder( CounterType.UNBOUNDED_STRONG )
-					.initialValue( request.getInitialValue() )
-					.storage( Storage.PERSISTENT )
-					.build() );
+			counterManager.defineCounter( counterName,
+				CounterConfiguration.builder(
+					CounterType.UNBOUNDED_STRONG )
+						.initialValue( initialValue )
+						.storage( Storage.PERSISTENT )
+						.build() );
 
-			if ( definedByCurrentThread ) {
-				return Long.valueOf( request.getInitialValue() );
-			}
+			LOG.tracef( "Counter %s is not defined, creating it", counterName );
 		}
 
 		StrongCounter strongCounter = counterManager.getStrongCounter( counterName );
-		try {
-			// consistent "single unit" increment && get
-			return strongCounter.addAndGet( request.getIncrement() ).get();
-		}
-		catch (ExecutionException | InterruptedException e) {
-			throw new HibernateException( "Interrupting Operation " + e.getMessage(), e );
-		}
-
+		return strongCounter;
 	}
 
 	private void validateGlobalConfiguration() {
@@ -85,14 +84,15 @@ public class ClusteredCounterCommand {
 		}
 	}
 
-	private String counterName(NextValueRequest request) {
-		String counterName = isSequence( request )
-				? request.getKey().getTable() // @SequenceGenerator
-				: request.getKey().getColumnValue(); // @TableGenerator
-		return counterName;
+	protected Number nextValue(NextValueRequest request, StrongCounter strongCounter) {
+		try {
+			Long newValue = strongCounter.addAndGet( request.getIncrement() ).get();
+			return newValue - request.getIncrement();
+		}
+		catch (ExecutionException | InterruptedException e) {
+			throw new HibernateException( "Interrupting Operation " + e.getMessage(), e );
+		}
 	}
 
-	private boolean isSequence(NextValueRequest request) {
-		return IdSourceKeyMetadata.IdSourceType.SEQUENCE.equals( request.getKey().getMetadata().getType() );
-	}
+	public abstract Number nextValue(NextValueRequest request);
 }
