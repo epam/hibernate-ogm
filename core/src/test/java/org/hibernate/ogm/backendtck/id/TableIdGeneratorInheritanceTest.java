@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.Table;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.ogm.utils.jpa.OgmJpaTestCase;
 
@@ -25,7 +26,6 @@ import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * Test that @Inheritance(strategy = TABLE_PER_CLASS) with generated id work correct
- *
  */
 public class TableIdGeneratorInheritanceTest extends OgmJpaTestCase {
 
@@ -56,7 +56,8 @@ public class TableIdGeneratorInheritanceTest extends OgmJpaTestCase {
 
 		assertThat( loadedTruck ).isNotNull().as( "truck not loaded" );
 		assertThat( loadedTruck.getId() ).isNotNull().as( "truck id not loaded" );
-		assertThat( loadedTruck.getId() ).isEqualTo(truck.getId()).as( "loaded truck id is not equals saved truck id" );
+		assertThat( loadedTruck.getId() ).isEqualTo( truck.getId() )
+				.as( "loaded truck id is not equals saved truck id" );
 		em.getTransaction().commit();
 	}
 
