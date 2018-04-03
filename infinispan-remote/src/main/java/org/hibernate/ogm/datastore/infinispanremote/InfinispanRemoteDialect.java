@@ -93,7 +93,7 @@ import org.infinispan.query.dsl.QueryFactory;
  *
  * @author Sanne Grinovero
  */
-public class InfinispanRemoteDialect<EK, AK, ISK> extends AbstractGroupingByEntityDialect implements MultigetGridDialect, StoredProcedureAwareGridDialect {
+public class InfinispanRemoteDialect<EK,AK,ISK> extends AbstractGroupingByEntityDialect implements MultigetGridDialect, StoredProcedureAwareGridDialect {
 
 	private static final Log log = LoggerFactory.make( MethodHandles.lookup() );
 
