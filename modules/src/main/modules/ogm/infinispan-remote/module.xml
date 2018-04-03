@@ -8,6 +8,7 @@
 <module xmlns="urn:jboss:module:1.1" name="org.hibernate.ogm.infinispan-remote" slot="${hibernate.ogm.infinispan-remote.module.slot}">
     <resources>
         <resource-root path="hibernate-ogm-infinispan-remote-${project.version}.jar" />
+        <resource-root path="hibernate-ogm-infinispan-test-task-${project.version}.jar" />
     </resources>
     <dependencies>
         <module name="org.hibernate.ogm" slot="${hibernate.ogm.module.slot}" />

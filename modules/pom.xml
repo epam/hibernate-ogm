@@ -80,6 +80,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>hibernate-ogm-infinispan-test-task</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate.ogm</groupId>
             <artifactId>hibernate-ogm-mongodb</artifactId>
             <optional>true</optional>

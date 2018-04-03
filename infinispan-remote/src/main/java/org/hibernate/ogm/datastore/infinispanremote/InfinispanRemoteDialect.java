@@ -6,6 +6,7 @@
  */
 package org.hibernate.ogm.datastore.infinispanremote;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +26,6 @@ import org.hibernate.ogm.datastore.infinispanremote.impl.protostream.Protostream
 import org.hibernate.ogm.datastore.infinispanremote.impl.protostream.ProtostreamPayload;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.Log;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.LoggerFactory;
-import java.lang.invoke.MethodHandles;
 import org.hibernate.ogm.datastore.map.impl.MapAssociationSnapshot;
 import org.hibernate.ogm.datastore.map.impl.MapHelpers;
 import org.hibernate.ogm.datastore.map.impl.MapTupleSnapshot;
@@ -48,6 +48,7 @@ import org.hibernate.ogm.dialect.spi.TupleAlreadyExistsException;
 import org.hibernate.ogm.dialect.spi.TupleContext;
 import org.hibernate.ogm.dialect.spi.TupleTypeContext;
 import org.hibernate.ogm.dialect.spi.TuplesSupplier;
+import org.hibernate.ogm.dialect.storedprocedure.spi.StoredProcedureAwareGridDialect;
 import org.hibernate.ogm.entityentry.impl.TuplePointer;
 import org.hibernate.ogm.model.key.spi.AssociationKey;
 import org.hibernate.ogm.model.key.spi.AssociationKeyMetadata;
@@ -60,6 +61,8 @@ import org.hibernate.ogm.model.spi.AssociationOperation;
 import org.hibernate.ogm.model.spi.AssociationOperationType;
 import org.hibernate.ogm.model.spi.Tuple;
 import org.hibernate.ogm.model.spi.Tuple.SnapshotType;
+import org.hibernate.ogm.storedprocedure.ProcedureQueryParameters;
+
 import org.infinispan.client.hotrod.MetadataValue;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.Search;
@@ -90,7 +93,9 @@ import org.infinispan.query.dsl.QueryFactory;
  *
  * @author Sanne Grinovero
  */
-public class InfinispanRemoteDialect<EK,AK,ISK> extends AbstractGroupingByEntityDialect implements MultigetGridDialect {
+public class InfinispanRemoteDialect<EK, AK, ISK> extends AbstractGroupingByEntityDialect
+		implements MultigetGridDialect,
+		StoredProcedureAwareGridDialect {
 
 	private static final Log log = LoggerFactory.make( MethodHandles.lookup() );
 
@@ -154,6 +159,37 @@ public class InfinispanRemoteDialect<EK,AK,ISK> extends AbstractGroupingByEntity
 		}
 
 		owningEntity.flushOperations();
+	}
+
+	@Override
+	public ClosableIterator<Tuple> callStoredProcedure(
+			String storedProcedureName, ProcedureQueryParameters queryParameters, TupleContext tupleContext) {
+		final RemoteCache<Object, Object> cache = this.provider.getCache();
+
+		final Object result = cache.execute( storedProcedureName, queryParameters.getNamedParameters() );
+
+		return new ClosableIterator<Tuple>() {
+			private boolean hasNext = true;
+
+			@Override
+			public void close() {
+
+			}
+
+			@Override
+			public boolean hasNext() {
+				return false;
+			}
+
+			@Override
+			public Tuple next() {
+				final HashMap<String, Object> map = new HashMap<>();
+				map.put( "1", result );
+				final Tuple tuple = new Tuple( new MapTupleSnapshot( map ), SnapshotType.INSERT );
+				hasNext = false;
+				return tuple;
+			}
+		};
 	}
 
 	/**

@@ -6,22 +6,7 @@
  */
 package org.hibernate.ogm.backendtck.storedprocedures;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hibernate.ogm.backendtck.storedprocedures.Car.RESULT_SET_PROC;
-import static org.hibernate.ogm.backendtck.storedprocedures.Car.RESULT_SET_PROC_ID_PARAM;
-import static org.hibernate.ogm.backendtck.storedprocedures.Car.RESULT_SET_PROC_TITLE_PARAM;
-import static org.hibernate.ogm.backendtck.storedprocedures.Car.SIMPLE_VALUE_PROC;
-import static org.hibernate.ogm.backendtck.storedprocedures.Car.UNIQUE_VALUE_PROC_PARAM;
-import static org.hibernate.ogm.utils.GridDialectType.HASHMAP;
-import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN;
-import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN_REMOTE;
-import static org.hibernate.ogm.utils.GridDialectType.MONGODB;
-import static org.hibernate.ogm.utils.GridDialectType.NEO4J_EMBEDDED;
-import static org.hibernate.ogm.utils.GridDialectType.NEO4J_REMOTE;
-
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceException;
@@ -31,11 +16,25 @@ import org.hibernate.HibernateException;
 import org.hibernate.ogm.utils.SkipByGridDialect;
 import org.hibernate.ogm.utils.TestForIssue;
 import org.hibernate.ogm.utils.jpa.OgmJpaTestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hibernate.ogm.backendtck.storedprocedures.Car.RESULT_SET_PROC;
+import static org.hibernate.ogm.backendtck.storedprocedures.Car.RESULT_SET_PROC_ID_PARAM;
+import static org.hibernate.ogm.backendtck.storedprocedures.Car.RESULT_SET_PROC_TITLE_PARAM;
+import static org.hibernate.ogm.backendtck.storedprocedures.Car.SIMPLE_VALUE_PROC;
+import static org.hibernate.ogm.backendtck.storedprocedures.Car.UNIQUE_VALUE_PROC_PARAM;
+import static org.hibernate.ogm.utils.GridDialectType.HASHMAP;
+import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN;
+import static org.hibernate.ogm.utils.GridDialectType.MONGODB;
+import static org.hibernate.ogm.utils.GridDialectType.NEO4J_EMBEDDED;
+import static org.hibernate.ogm.utils.GridDialectType.NEO4J_REMOTE;
 
 /**
  * Testing call of stored procedures that supports named parameters.
@@ -49,7 +48,7 @@ import org.junit.rules.ExpectedException;
  * @author Sergey Chernolyas &amp;sergey_chernolyas@gmail.com&amp;
  */
 @SkipByGridDialect(
-		value = { HASHMAP, INFINISPAN, INFINISPAN_REMOTE, NEO4J_EMBEDDED, NEO4J_REMOTE, MONGODB },
+		value = { HASHMAP, INFINISPAN, NEO4J_EMBEDDED, NEO4J_REMOTE, MONGODB },
 		comment = "These dialects don't support stored procedures with named parameters")
 @TestForIssue(jiraKey = { "OGM-359" })
 public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
@@ -70,7 +69,7 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 	}
 
 	@Test
-	public void testSingleResultDynamicCall() throws Exception {
+	public void testSingleResultDynamicCall() {
 		StoredProcedureQuery storedProcedureQuery = em.createStoredProcedureQuery( SIMPLE_VALUE_PROC );
 		storedProcedureQuery.registerStoredProcedureParameter( UNIQUE_VALUE_PROC_PARAM, Integer.class, ParameterMode.IN );
 		storedProcedureQuery.setParameter( UNIQUE_VALUE_PROC_PARAM, 1 );
@@ -80,7 +79,7 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 	}
 
 	@Test
-	public void testResultSetDynamicCallWithResultClass() throws Exception {
+	public void testResultSetDynamicCallWithResultClass() {
 		StoredProcedureQuery storedProcedureQuery = em.createStoredProcedureQuery( RESULT_SET_PROC, Car.class );
 
 		storedProcedureQuery.registerStoredProcedureParameter( "result", Void.class, ParameterMode.REF_CURSOR );
@@ -96,7 +95,7 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 	}
 
 	@Test
-	public void testResultSetDynamicCallWithResultMapping() throws Exception {
+	public void testResultSetDynamicCallWithResultMapping() {
 		StoredProcedureQuery storedProcedureQuery = em.createStoredProcedureQuery( RESULT_SET_PROC, "carMapping" );
 
 		storedProcedureQuery.registerStoredProcedureParameter( "result", Void.class, ParameterMode.REF_CURSOR );
@@ -112,7 +111,7 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 	}
 
 	@Test
-	public void testResultSetStaticCallWithResultClass() throws Exception {
+	public void testResultSetStaticCallWithResultClass() {
 		StoredProcedureQuery storedProcedureQuery = em.createNamedStoredProcedureQuery( "returnNamedParametersWithEntity" );
 		storedProcedureQuery.setParameter( RESULT_SET_PROC_ID_PARAM, 1 );
 		storedProcedureQuery.setParameter( RESULT_SET_PROC_TITLE_PARAM, "title" );
@@ -123,7 +122,7 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 	}
 
 	@Test
-	public void testResultSetStaticCallWithResultMapping() throws Exception {
+	public void testResultSetStaticCallWithResultMapping() {
 		StoredProcedureQuery storedProcedureQuery = em.createNamedStoredProcedureQuery( "returnNamedParametersWithMapping" );
 		storedProcedureQuery.setParameter( RESULT_SET_PROC_ID_PARAM, 2 );
 		storedProcedureQuery.setParameter( RESULT_SET_PROC_TITLE_PARAM, "title'2" );
@@ -134,7 +133,7 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 	}
 
 	@Test
-	public void testResultSetStaticCallRaw() throws Exception {
+	public void testResultSetStaticCallRaw() {
 		StoredProcedureQuery storedProcedureQuery = em.createNamedStoredProcedureQuery( "returnNamedParametersRaw" );
 		// First parameter is void
 		storedProcedureQuery.setParameter( RESULT_SET_PROC_ID_PARAM, 2 );
@@ -142,11 +141,11 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> listResult = storedProcedureQuery.getResultList();
-		assertThat( listResult ).containsExactly( new Object[]{ 2, "title'2" } );
+		assertThat( listResult ).containsExactly( 2, "title'2" );
 	}
 
 	@Test
-	public void testExceptionWhenMultipleEntitiesAreUsed() throws Exception {
+	public void testExceptionWhenMultipleEntitiesAreUsed() {
 		thrown.expect( PersistenceException.class );
 		thrown.expectCause( isA( HibernateException.class ) );
 		thrown.expectMessage(

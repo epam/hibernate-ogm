@@ -6,9 +6,6 @@
  */
 package org.hibernate.ogm.storedprocedure.impl;
 
-import static org.hibernate.ogm.util.impl.CustomLoaderHelper.listOfEntities;
-import static org.hibernate.ogm.util.impl.TupleContextHelper.tupleContext;
-
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -17,7 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.persistence.ParameterMode;
 
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -38,6 +34,9 @@ import org.hibernate.procedure.ProcedureOutputs;
 import org.hibernate.procedure.internal.NoSQLProcedureCallImpl;
 import org.hibernate.result.Output;
 
+import static org.hibernate.ogm.util.impl.CustomLoaderHelper.listOfEntities;
+import static org.hibernate.ogm.util.impl.TupleContextHelper.tupleContext;
+
 /**
  * @author Davide D'Alto
  * @author Sergey Chernolyas &amp;sergey_chernolyas@gmail.com&amp;
@@ -54,6 +53,9 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 		this.procedureCall = procedureCall;
 		this.sessionFactory = procedureCall.getSession().getFactory();
 		this.gridDialect = this.sessionFactory.getServiceRegistry().getService( StoredProcedureAwareGridDialect.class );
+		if ( gridDialect == null ) {
+			throw new UnsupportedOperationException( "Your grid dialect do not supports stored procedures" );
+		}
 	}
 
 	@Override
@@ -73,7 +75,8 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 
 	@Override
 	public Output getCurrent() {
-		ProcedureQueryParameters queryParameters = createProcedureQueryParameters( (List<ParameterRegistration<?>>) procedureCall.getRegisteredParameters() );
+		ProcedureQueryParameters queryParameters = createProcedureQueryParameters( (List<ParameterRegistration<?>>) procedureCall
+				.getRegisteredParameters() );
 
 		if ( !procedureCall.getSynchronizedQuerySpaces().isEmpty() ) {
 			return entitiesOutput( procedureCall, queryParameters );
@@ -108,7 +111,10 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 		return new NoSQLProcedureResultSetOutputImpl( entityList );
 	}
 
-	private EntityMetadataInformation entityMetadataInfo(String querySpace, MetamodelImplementor metamodelImplementor, OgmEntityPersister entityPersister) {
+	private EntityMetadataInformation entityMetadataInfo(
+			String querySpace,
+			MetamodelImplementor metamodelImplementor,
+			OgmEntityPersister entityPersister) {
 		String entityName = null;
 		for ( Map.Entry<String, EntityPersister> entry : metamodelImplementor.entityPersisters().entrySet() ) {
 			List<Serializable> querySpaces = Arrays.asList( entry.getValue().getQuerySpaces() );
@@ -160,7 +166,6 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 		}
 		return new NoSQLProcedureResultSetOutputImpl( tuplesAsList );
 	}
-
 	@Override
 	public boolean goToNext() {
 		return false;

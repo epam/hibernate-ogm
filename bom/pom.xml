@@ -402,6 +402,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>hibernate-ogm-infinispan-test-task</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>hibernate-ogm-mongodb</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -485,6 +492,11 @@
                         <artifactId>jboss-transaction-api_1.1_spec</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-tasks-api</artifactId>
+                <version>${infinispanVersion}</version>
             </dependency>
             <dependency>
                 <groupId>org.infinispan</groupId>
