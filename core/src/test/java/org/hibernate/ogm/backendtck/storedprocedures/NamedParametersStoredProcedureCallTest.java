@@ -17,6 +17,7 @@ import static org.hibernate.ogm.test.storedprocedures.MockStoredProcedureDialect
 import static org.hibernate.ogm.test.storedprocedures.MockStoredProcedureDialect.INVALID_PARAM;
 import static org.hibernate.ogm.test.storedprocedures.MockStoredProcedureDialect.NOT_EXISTING_PROCEDURE_NAME;
 import static org.hibernate.ogm.utils.GridDialectType.HASHMAP;
+import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN_REMOTE;
 import static org.hibernate.ogm.utils.GridDialectType.MONGODB;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_EMBEDDED;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_REMOTE;
@@ -174,6 +175,9 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 	}
 
 	@Test
+	@SkipByGridDialect(
+			value = { INFINISPAN_REMOTE },
+			comment = "These dialects delegate validation to users")
 	public void testExceptionWhenUsingNotRegisteredParameter() throws Exception {
 		thrown.expect( PersistenceException.class );
 		thrown.expectMessage( "org.hibernate.HibernateException: OGM000095" );

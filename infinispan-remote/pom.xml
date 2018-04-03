@@ -181,6 +181,15 @@
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources/storedprocedures/servertask</directory>
+                <targetPath>${infinispan-server.home}/standalone/deployments/</targetPath>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.wildfly.build</groupId>

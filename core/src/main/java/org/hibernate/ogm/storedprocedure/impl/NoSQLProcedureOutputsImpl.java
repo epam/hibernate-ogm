@@ -54,6 +54,13 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 		this.procedureCall = procedureCall;
 		this.sessionFactory = procedureCall.getSession().getFactory();
 		this.gridDialect = this.sessionFactory.getServiceRegistry().getService( StoredProcedureAwareGridDialect.class );
+		//TODO: Check this "if"
+		if ( gridDialect == null ) {
+			throw new UnsupportedOperationException( String.format(
+					"Your grid dialect do not supports stored procedures. You tried to call '%s' procedure",
+					procedureCall.getProcedureName()
+			) );
+		}
 	}
 
 	@Override
