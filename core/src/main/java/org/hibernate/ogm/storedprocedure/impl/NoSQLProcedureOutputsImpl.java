@@ -76,8 +76,7 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 
 	@Override
 	public Output getCurrent() {
-		ProcedureQueryParameters queryParameters = createProcedureQueryParameters( (List<ParameterRegistration<?>>) procedureCall
-				.getRegisteredParameters() );
+		ProcedureQueryParameters queryParameters = createProcedureQueryParameters( (List<ParameterRegistration<?>>) procedureCall.getRegisteredParameters() );
 
 		if ( !procedureCall.getSynchronizedQuerySpaces().isEmpty() ) {
 			return entitiesOutput( procedureCall, queryParameters );
@@ -112,10 +111,7 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 		return new NoSQLProcedureResultSetOutputImpl( entityList );
 	}
 
-	private EntityMetadataInformation entityMetadataInfo(
-			String querySpace,
-			MetamodelImplementor metamodelImplementor,
-			OgmEntityPersister entityPersister) {
+	private EntityMetadataInformation entityMetadataInfo(String querySpace, MetamodelImplementor metamodelImplementor, OgmEntityPersister entityPersister) {
 		String entityName = null;
 		for ( Map.Entry<String, EntityPersister> entry : metamodelImplementor.entityPersisters().entrySet() ) {
 			List<Serializable> querySpaces = Arrays.asList( entry.getValue().getQuerySpaces() );
@@ -167,6 +163,7 @@ public class NoSQLProcedureOutputsImpl implements ProcedureOutputs {
 		}
 		return new NoSQLProcedureResultSetOutputImpl( tuplesAsList );
 	}
+
 	@Override
 	public boolean goToNext() {
 		return false;
