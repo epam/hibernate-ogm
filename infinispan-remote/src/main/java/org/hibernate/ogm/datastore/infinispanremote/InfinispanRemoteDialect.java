@@ -6,7 +6,6 @@
  */
 package org.hibernate.ogm.datastore.infinispanremote;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import org.hibernate.ogm.datastore.infinispanremote.impl.protostream.Protostream
 import org.hibernate.ogm.datastore.infinispanremote.impl.protostream.ProtostreamPayload;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.Log;
 import org.hibernate.ogm.datastore.infinispanremote.logging.impl.LoggerFactory;
+import java.lang.invoke.MethodHandles;
 import org.hibernate.ogm.datastore.map.impl.MapAssociationSnapshot;
 import org.hibernate.ogm.datastore.map.impl.MapHelpers;
 import org.hibernate.ogm.datastore.map.impl.MapTupleSnapshot;

@@ -6,6 +6,9 @@
  */
 package org.hibernate.ogm.storedprocedure.impl;
 
+import static org.hibernate.ogm.util.impl.CustomLoaderHelper.listOfEntities;
+import static org.hibernate.ogm.util.impl.TupleContextHelper.tupleContext;
+
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.ParameterMode;
 
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -33,9 +37,6 @@ import org.hibernate.procedure.ParameterRegistration;
 import org.hibernate.procedure.ProcedureOutputs;
 import org.hibernate.procedure.internal.NoSQLProcedureCallImpl;
 import org.hibernate.result.Output;
-
-import static org.hibernate.ogm.util.impl.CustomLoaderHelper.listOfEntities;
-import static org.hibernate.ogm.util.impl.TupleContextHelper.tupleContext;
 
 /**
  * @author Davide D'Alto
