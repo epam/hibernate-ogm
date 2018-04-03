@@ -37,6 +37,7 @@
                     include="false"/>
             </contents>
         </feature-pack>
-
+        <feature-pack groupId="org.hibernate.ogm" artifactId="hibernate-ogm-infinispan-test-task" version="${project.version}" packaging="jar">
+        </feature-pack>
     </feature-packs>
 </server-provisioning>

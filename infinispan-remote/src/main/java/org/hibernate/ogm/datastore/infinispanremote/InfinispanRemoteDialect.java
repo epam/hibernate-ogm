@@ -62,6 +62,7 @@ import org.hibernate.ogm.model.spi.AssociationOperationType;
 import org.hibernate.ogm.model.spi.Tuple;
 import org.hibernate.ogm.model.spi.Tuple.SnapshotType;
 import org.hibernate.ogm.storedprocedure.ProcedureQueryParameters;
+import org.hibernate.ogm.util.impl.CollectionHelper;
 
 import org.infinispan.client.hotrod.MetadataValue;
 import org.infinispan.client.hotrod.RemoteCache;
@@ -166,30 +167,13 @@ public class InfinispanRemoteDialect<EK, AK, ISK> extends AbstractGroupingByEnti
 			String storedProcedureName, ProcedureQueryParameters queryParameters, TupleContext tupleContext) {
 		final RemoteCache<Object, Object> cache = this.provider.getCache();
 
-		final Object result = cache.execute( storedProcedureName, queryParameters.getNamedParameters() );
+		final Object retvalObj = cache.execute( storedProcedureName, queryParameters.getNamedParameters() );
+		Tuple tuple = new Tuple();
+		tuple.put( "result", retvalObj );
+		final List<Tuple> resultTuples = Collections.singletonList( tuple );
 
-		return new ClosableIterator<Tuple>() {
-			private boolean hasNext = true;
+		return CollectionHelper.newClosableIterator( resultTuples );
 
-			@Override
-			public void close() {
-
-			}
-
-			@Override
-			public boolean hasNext() {
-				return false;
-			}
-
-			@Override
-			public Tuple next() {
-				final HashMap<String, Object> map = new HashMap<>();
-				map.put( "1", result );
-				final Tuple tuple = new Tuple( new MapTupleSnapshot( map ), SnapshotType.INSERT );
-				hasNext = false;
-				return tuple;
-			}
-		};
 	}
 
 	/**
