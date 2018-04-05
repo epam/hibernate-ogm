@@ -404,7 +404,6 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>hibernate-ogm-infinispan-test-task</artifactId>
                 <version>${project.version}</version>
-                <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
             <dependency>
