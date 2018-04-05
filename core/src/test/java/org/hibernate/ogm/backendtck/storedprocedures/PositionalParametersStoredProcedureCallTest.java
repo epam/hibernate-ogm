@@ -46,7 +46,7 @@ import org.junit.rules.ExpectedException;
  * @author Sergey Chernolyas &amp;sergey_chernolyas@gmail.com&amp;
  */
 @SkipByGridDialect(
-		value = { HASHMAP, INFINISPAN, INFINISPAN_REMOTE, NEO4J_EMBEDDED, NEO4J_REMOTE },
+		value = { HASHMAP, INFINISPAN, INFINISPAN_REMOTE, NEO4J_REMOTE },
 		comment = "These dialects not support stored procedures with positional parameters")
 @TestForIssue(jiraKey = { "OGM-359" })
 public class PositionalParametersStoredProcedureCallTest extends OgmJpaTestCase {

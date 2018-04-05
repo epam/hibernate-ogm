@@ -20,6 +20,7 @@ import org.hibernate.ogm.datastore.neo4j.Neo4jProperties;
 import org.hibernate.ogm.datastore.neo4j.embedded.impl.EmbeddedNeo4jDatastoreProvider;
 import org.hibernate.ogm.datastore.neo4j.remote.bolt.impl.BoltNeo4jDatastoreProvider;
 import org.hibernate.ogm.datastore.neo4j.remote.http.impl.HttpNeo4jDatastoreProvider;
+import org.hibernate.ogm.datastore.neo4j.test.procedures.CarStoredProcedures;
 import org.hibernate.ogm.datastore.spi.DatastoreConfiguration;
 import org.hibernate.ogm.datastore.spi.DatastoreProvider;
 import org.hibernate.ogm.dialect.spi.GridDialect;
@@ -30,6 +31,10 @@ import org.hibernate.ogm.utils.BaseGridDialectTestHelper;
 import org.hibernate.ogm.utils.GridDialectOperationContexts;
 import org.hibernate.ogm.utils.GridDialectTestHelper;
 import org.hibernate.ogm.utils.TestHelper;
+
+import org.neo4j.kernel.api.exceptions.KernelException;
+import org.neo4j.kernel.impl.proc.Procedures;
+import org.neo4j.kernel.internal.GraphDatabaseAPI;
 
 /**
  * @author Davide D'Alto &lt;davide@hibernate.org&gt;
@@ -163,6 +168,20 @@ public class Neo4jTestHelper extends BaseGridDialectTestHelper implements GridDi
 				return BoltNeo4jTestHelperDelegate.INSTANCE;
 			default:
 				throw new RuntimeException( "Not testing with Neo4jDB, cannot extract underlying dialect" );
+		}
+	}
+
+	@Override
+	public void prepareDatabase(SessionFactory sessionFactory) {
+		EmbeddedNeo4jDatastoreProvider provider = (EmbeddedNeo4jDatastoreProvider) Neo4jTestHelper
+				.getDatastoreProvider( sessionFactory );
+		try {
+			( (GraphDatabaseAPI) provider.getDatabase() )
+					.getDependencyResolver().resolveDependency( Procedures.class ).registerProcedure(
+					CarStoredProcedures.class );
+		}
+		catch (KernelException e) {
+			throw new RuntimeException( "Loading of stored procedures is failed", e );
 		}
 	}
 }

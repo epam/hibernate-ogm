@@ -9,6 +9,7 @@ package org.hibernate.ogm.datastore.neo4j;
 import static org.hibernate.ogm.util.impl.EmbeddedHelper.split;
 import static org.neo4j.graphdb.RelationshipType.withName;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import org.hibernate.ogm.dialect.spi.TupleAlreadyExistsException;
 import org.hibernate.ogm.dialect.spi.TupleContext;
 import org.hibernate.ogm.dialect.spi.TupleTypeContext;
 import org.hibernate.ogm.dialect.spi.TuplesSupplier;
+import org.hibernate.ogm.dialect.storedprocedure.spi.StoredProcedureAwareGridDialect;
 import org.hibernate.ogm.entityentry.impl.TuplePointer;
 import org.hibernate.ogm.model.key.spi.AssociatedEntityKeyMetadata;
 import org.hibernate.ogm.model.key.spi.AssociationKey;
@@ -58,6 +60,9 @@ import org.hibernate.ogm.model.spi.EntityMetadataInformation;
 import org.hibernate.ogm.model.spi.Tuple;
 import org.hibernate.ogm.model.spi.Tuple.SnapshotType;
 import org.hibernate.ogm.model.spi.TupleOperation;
+import org.hibernate.ogm.storedprocedure.ProcedureQueryParameters;
+import org.hibernate.ogm.util.impl.CollectionHelper;
+
 import org.neo4j.graphdb.ConstraintViolationException;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -80,7 +85,8 @@ import org.neo4j.kernel.api.exceptions.schema.UniquePropertyValueValidationExcep
  *
  * @author Davide D'Alto &lt;davide@hibernate.org&gt;
  */
-public class EmbeddedNeo4jDialect extends BaseNeo4jDialect<EmbeddedNeo4jEntityQueries, EmbeddedNeo4jAssociationQueries> {
+public class EmbeddedNeo4jDialect extends BaseNeo4jDialect<EmbeddedNeo4jEntityQueries, EmbeddedNeo4jAssociationQueries>
+		implements StoredProcedureAwareGridDialect {
 
 	private static final Log log = LoggerFactory.make( MethodHandles.lookup() );
 
@@ -604,4 +610,32 @@ public class EmbeddedNeo4jDialect extends BaseNeo4jDialect<EmbeddedNeo4jEntityQu
 		// actually executing them (see https://github.com/neo4j/neo4j/issues/2766)
 		return nativeQuery;
 	}
+
+	@Override
+	public ClosableIterator<Tuple> callStoredProcedure(String storedProcedureName,
+			ProcedureQueryParameters queryParameters, TupleContext tupleContext) {
+		StringBuilder queryBuilder = new StringBuilder(  );
+		queryBuilder.append( "CALL " ).append( storedProcedureName ).append( "(" );
+		Map namedParams = new HashMap<>(  );
+		List parameters = queryParameters.getPositionalParameters();
+		for(int i = 0; i < parameters.size(); i++) {
+			queryBuilder.append( "{" + i + "}," );
+			namedParams.put( i, parameters.get( i ) );
+		}
+		queryBuilder.replace( queryBuilder.lastIndexOf( "," ), queryBuilder.length(), "" );
+		queryBuilder.append( ")" );
+		Result result = dataBase.execute( queryBuilder.toString(), namedParams);
+		return CollectionHelper.newClosableIterator( extractTuples( result) );
+	}
+
+	private List<Tuple> extractTuples(Result result) {
+		List<Tuple> tuples = new ArrayList<>(  );
+		while(result.hasNext()) {
+			Tuple tuple = new Tuple();
+			result.next().forEach( (key, value) -> tuple.put( key, value ) );
+			tuples.add( tuple );
+		}
+		return tuples;
+	}
+
 }
