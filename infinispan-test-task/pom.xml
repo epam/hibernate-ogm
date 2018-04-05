@@ -22,8 +22,6 @@
         <!-- Skipping enforcer plug-in as WildFly / Infinispan Server artifact
              causes several dependency convergence issues which are beyond our control -->
         <enforcer.skip>true</enforcer.skip>
-        <infinispanServerName>infinispan-server</infinispanServerName>
-        <infinispan-server.home>${project.build.directory}/${infinispanServerName}</infinispan-server.home>
     </properties>
 
     <artifactId>hibernate-ogm-infinispan-test-task</artifactId>
