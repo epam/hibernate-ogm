@@ -7,10 +7,14 @@
 package org.hibernate.ogm.datastore.infinispan.logging.impl;
 
 import org.hibernate.HibernateException;
+import org.hibernate.ogm.util.impl.ClassObjectFormatter;
 import org.hibernate.service.spi.ServiceException;
+
 import org.infinispan.commons.marshall.AdvancedExternalizer;
+
 import org.jboss.logging.Logger.Level;
 import org.jboss.logging.annotations.Cause;
+import org.jboss.logging.annotations.FormatWith;
 import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.Message;
 import org.jboss.logging.annotations.MessageLogger;
@@ -60,4 +64,18 @@ public interface Log extends org.hibernate.ogm.util.impl.Log {
 	@Message(id = 1110, value = "Exception generating value for counter '%1$s'.")
 	HibernateException exceptionGeneratingValueForCounter(String counterName);
 
+	@Message(id = 1111, value = "Cannot execute stored procedure '%s'.")
+	HibernateException cannotExecuteStoredProcedure(String storedProcedureName, @Cause Throwable e);
+
+	@Message(id = 1112, value = "Cannot extract stored procedure '%s' result set '%s'.")
+	HibernateException cannotExtractStoredProcedureResultSet(String storedProcedureName, Object resultSet, @Cause Exception e);
+
+	@Message(id = 1113, value = "Cannot instantiate stored procedure '%s' with resolved name '%s'.")
+	HibernateException cannotInstantiateStoredProcedure(String storedProcedureName, String className, @Cause Exception e);
+
+	@Message(id = 1114, value = "Cannot set stored procedure '%s' parameters '%s'.")
+	HibernateException cannotSetStoredProcedureParameters(String storedProcedureName, Object params, @Cause Exception e);
+
+	@Message(id = 1115, value = "Dialect %s does not support positional parameters when calling stored procedures")
+	HibernateException dialectDoesNotSupportPositionalParametersForStoredProcedures( @FormatWith(ClassObjectFormatter.class) Class<?> dialectClass );
 }
