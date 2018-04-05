@@ -15,7 +15,6 @@ import static org.hibernate.ogm.backendtck.storedprocedures.Car.SIMPLE_VALUE_PRO
 import static org.hibernate.ogm.backendtck.storedprocedures.Car.UNIQUE_VALUE_PROC_PARAM;
 import static org.hibernate.ogm.utils.GridDialectType.HASHMAP;
 import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN;
-import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN_REMOTE;
 import static org.hibernate.ogm.utils.GridDialectType.MONGODB;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_EMBEDDED;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_REMOTE;
