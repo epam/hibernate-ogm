@@ -222,9 +222,19 @@
                                     <groupId>org.hibernate.ogm</groupId>
                                     <artifactId>hibernate-ogm-infinispan-test-task</artifactId>
                                     <version>${project.version}</version>
-                                    <type>jar</type>
-                                    <outputDirectory>${infinispan-server.home}/standalone/deployments</outputDirectory>
-                                    <destFileName>hibernate-ogm-infinispan-test-task.jar</destFileName>
+                                    <type>jar</type>                                      
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${infinispan-server.home}/standalone/deployments/</outputDirectory>
+                                    <!--<destFileName>hibernate-ogm-infinispan-test-task.jar</destFileName>-->
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.hibernate.ogm</groupId>
+                                    <artifactId>hibernate-ogm-infinispan-test-task</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>                                      
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${infinispan-server.home}/standalone/data/content/</outputDirectory>
+                                    <!--<destFileName>hibernate-ogm-infinispan-test-task.jar</destFileName>-->
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
