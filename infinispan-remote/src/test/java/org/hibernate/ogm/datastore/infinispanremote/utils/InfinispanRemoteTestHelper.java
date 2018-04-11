@@ -6,17 +6,20 @@
  */
 package org.hibernate.ogm.datastore.infinispanremote.utils;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.ogm.backendtck.storedprocedures.Car;
 import org.hibernate.ogm.cfg.OgmProperties;
 import org.hibernate.ogm.datastore.document.options.AssociationStorageType;
 import org.hibernate.ogm.datastore.infinispanremote.InfinispanRemoteDataStoreConfiguration;
@@ -37,6 +40,8 @@ import org.hibernate.ogm.utils.BaseGridDialectTestHelper;
 import org.hibernate.ogm.utils.GridDialectTestHelper;
 import org.hibernate.persister.collection.CollectionPersister;
 import org.hibernate.persister.entity.EntityPersister;
+
+import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.Search;
 import org.infinispan.commons.util.CloseableIterator;
 import org.infinispan.query.dsl.Query;
@@ -45,6 +50,26 @@ import org.infinispan.query.dsl.Query;
  * @author Sanne Grinovero (C) 2015 Red Hat Inc.
  */
 public class InfinispanRemoteTestHelper extends BaseGridDialectTestHelper implements GridDialectTestHelper {
+
+	@Override
+	public void prepareDatabase(SessionFactory sessionFactory) {
+		super.prepareDatabase( sessionFactory );
+		InfinispanRemoteDatastoreProvider provider = getProvider( sessionFactory );
+		registerStoredProcedures( provider );
+	}
+
+	private void registerStoredProcedures(InfinispanRemoteDatastoreProvider provider) {
+		RemoteCache<String, String> scriptCache = provider.getScriptCache();
+		String simpleValueProcedure = toResourceString( "/storedprocedures/simpleValueProcedure.js" );
+		String resultSetProcedure = toResourceString( "/storedprocedures/resultSetProcedure.js" );
+		String exceptionalProcedure = toResourceString( "/storedprocedures/exceptionalProcedure.js" );
+		scriptCache.put( Car.SIMPLE_VALUE_PROC, simpleValueProcedure );
+		scriptCache.put( "simpleValueProcedure.js", simpleValueProcedure );
+		scriptCache.put( Car.RESULT_SET_PROC, resultSetProcedure );
+		scriptCache.put( "resultSetProcedure.js", resultSetProcedure );
+		scriptCache.put( "exceptionalProcedure", exceptionalProcedure );
+		scriptCache.put( "exceptionalProcedure.js", exceptionalProcedure );
+	}
 
 	@Override
 	public long getNumberOfAssociations(SessionFactory sessionFactory) {
@@ -157,5 +182,13 @@ public class InfinispanRemoteTestHelper extends BaseGridDialectTestHelper implem
 			throw new RuntimeException( "Not testing with Infinispan Remote, cannot extract underlying cache" );
 		}
 		return InfinispanRemoteDatastoreProvider.class.cast( provider );
+	}
+
+	private static String toResourceString(String path) {
+		return toString( InfinispanRemoteTestHelper.class.getResourceAsStream( path ) );
+	}
+
+	private static String toString(InputStream is) {
+		return new Scanner( is ).useDelimiter( "\\A" ).next();
 	}
 }

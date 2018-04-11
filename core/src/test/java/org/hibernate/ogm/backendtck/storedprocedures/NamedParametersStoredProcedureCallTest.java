@@ -15,7 +15,6 @@ import static org.hibernate.ogm.backendtck.storedprocedures.Car.SIMPLE_VALUE_PRO
 import static org.hibernate.ogm.backendtck.storedprocedures.Car.UNIQUE_VALUE_PROC_PARAM;
 import static org.hibernate.ogm.utils.GridDialectType.HASHMAP;
 import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN;
-import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN_REMOTE;
 import static org.hibernate.ogm.utils.GridDialectType.MONGODB;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_EMBEDDED;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_REMOTE;
@@ -49,7 +48,7 @@ import org.junit.rules.ExpectedException;
  * @author Sergey Chernolyas &amp;sergey_chernolyas@gmail.com&amp;
  */
 @SkipByGridDialect(
-		value = { HASHMAP, INFINISPAN, INFINISPAN_REMOTE, NEO4J_EMBEDDED, NEO4J_REMOTE, MONGODB },
+		value = { HASHMAP, INFINISPAN, NEO4J_EMBEDDED, NEO4J_REMOTE, MONGODB },
 		comment = "These dialects don't support stored procedures with named parameters")
 @TestForIssue(jiraKey = { "OGM-359" })
 public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
@@ -160,6 +159,45 @@ public class NamedParametersStoredProcedureCallTest extends OgmJpaTestCase {
 		storedProcedureQuery.setParameter( 1, 1 );
 		storedProcedureQuery.setParameter( 2, "title" );
 		storedProcedureQuery.getResultList();
+	}
+
+	@SkipByGridDialect(
+			value = { HASHMAP },
+			comment = "These dialects don't throw exception when procedure does not exist.")
+	@Test
+	public void testExceptionWhenProcedureDoesNotExist() throws Exception {
+		thrown.expect( PersistenceException.class );
+		thrown.expectMessage( "org.hibernate.HibernateException: OGM000093" );
+		StoredProcedureQuery storedProcedureQuery = em.createStoredProcedureQuery( "notExistingProcedureName", Car.class );
+		storedProcedureQuery.registerStoredProcedureParameter( "param", Integer.class, ParameterMode.IN );
+		storedProcedureQuery.setParameter( "param", 1 );
+		storedProcedureQuery.getSingleResult();
+	}
+
+	@SkipByGridDialect(
+			value = { HASHMAP },
+			comment = "These dialects don't throw exception when using positional parameters.")
+	@Test
+	public void testExceptionWhenUsePositionalParameters() throws Exception {
+		thrown.expect( PersistenceException.class );
+		thrown.expectMessage( "org.hibernate.HibernateException: OGM000094" );
+		StoredProcedureQuery storedProcedureQuery = em.createStoredProcedureQuery( Car.SIMPLE_VALUE_PROC, Car.class );
+		storedProcedureQuery.registerStoredProcedureParameter( 0, Integer.class, ParameterMode.IN );
+		storedProcedureQuery.setParameter( 0, 1 );
+		storedProcedureQuery.getSingleResult();
+	}
+
+	@SkipByGridDialect(
+			value = { HASHMAP },
+			comment = "These dialects don't throw exception when procedure fails.")
+	@Test
+	public void testExceptionWhenProcedureFails() throws Exception {
+		thrown.expect( PersistenceException.class );
+		thrown.expectMessage( "org.hibernate.HibernateException: OGM000092" );
+		StoredProcedureQuery storedProcedureQuery = em.createStoredProcedureQuery( "exceptionalProcedure", Integer.class );
+		storedProcedureQuery.registerStoredProcedureParameter( "param", Integer.class, ParameterMode.IN );
+		storedProcedureQuery.setParameter( "param", 1 );
+		storedProcedureQuery.getSingleResult();
 	}
 
 	@Override
