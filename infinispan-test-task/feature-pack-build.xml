@@ -1,11 +1,7 @@
 
 <build xmlns="urn:wildfly:feature-pack-build:1.1">
-    <dependencies>
-        <artifact name="org.hibernate.ogm:hibernate-ogm-infinispan-test-task" />
-    </dependencies>
-
     <copy-artifacts>
-        <copy-artifact artifact="org.hibernate.ogm:hibernate-ogm-infinispan-test-task" to-location="modules/system/layers/base/org/hibernate/ogm/infinispan/test-task/jar/"/>
+        <copy-artifact artifact="org.hibernate.ogm:hibernate-ogm-infinispan-test-task" to-location="hibernate-ogm-infinispan-test-task.jar"/>
     </copy-artifacts>
 
 </build>
