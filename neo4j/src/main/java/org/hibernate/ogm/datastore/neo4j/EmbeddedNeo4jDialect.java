@@ -619,8 +619,8 @@ public class EmbeddedNeo4jDialect extends BaseNeo4jDialect<EmbeddedNeo4jEntityQu
 		Map namedParams = new HashMap<>(  );
 		List parameters = queryParameters.getPositionalParameters();
 		for(int i = 0; i < parameters.size(); i++) {
-			queryBuilder.append( "{" + i + "}," );
-			namedParams.put( i, parameters.get( i ) );
+			queryBuilder.append( "{a" + i + "}," );
+			namedParams.put( "a" + i, parameters.get( i ) );
 		}
 		queryBuilder.replace( queryBuilder.lastIndexOf( "," ), queryBuilder.length(), "" );
 		queryBuilder.append( ")" );

@@ -17,31 +17,31 @@ import org.neo4j.procedure.Procedure;
 
 public class CarStoredProcedures {
 
-	@Procedure(value = Car.SIMPLE_VALUE_PROC, mode= Mode.WRITE)
-	public Stream<Output> simpleValueProcedure(@Name("id") long id) {
-		Map<String, Object> map = new HashMap<>(  );
-		map.put( "id", id );
-		return  Collections.list(new Output(map)).stream();
+	@Procedure(value = Car.SIMPLE_VALUE_PROC, mode = Mode.WRITE)
+	public Stream<Result> simpleValueProcedure(@Name("id") long id) {
+		return Collections.list( new Result( id, "" ) ).stream();
 	}
 
-	@Procedure(value = Car.RESULT_SET_PROC, mode= Mode.WRITE)
-	public Stream<Output> resultSetProcedure(@Name("id") long id, @Name("title") String title) {
-		Map map = new HashMap();
-		map.put( id, title );
-		return Collections.list(new Output(map)).stream();
+	@Procedure(value = Car.RESULT_SET_PROC, mode = Mode.WRITE)
+	public Stream<Result> resultSetProcedure(@Name("id") long id, @Name("title") String title) {
+		return Collections.list( new Result( id, title ) ).stream();
 	}
 
-	public class Output {
-		public Map out;
+	public static class Result {
+		public long id;
+		public String title;
 
-		public Output(Map out) {
-			this.out = out;
+		public Result() {
 		}
 
-		public Map getOut() {
-			return out;
+		public Result(Long id) {
+			this.id = id;
 		}
 
+		public Result(Long id, String title) {
+			this.id = id;
+			this.title = title;
+		}
 	}
 }
 //	Result result = dataBase.execute( "CALL dbms.procedures()" );
