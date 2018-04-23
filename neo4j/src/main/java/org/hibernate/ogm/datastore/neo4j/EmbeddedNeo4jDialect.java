@@ -63,6 +63,7 @@ import org.hibernate.ogm.model.spi.TupleOperation;
 import org.hibernate.ogm.storedprocedure.ProcedureQueryParameters;
 import org.hibernate.ogm.util.impl.CollectionHelper;
 
+import javafx.util.Pair;
 import org.neo4j.graphdb.ConstraintViolationException;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -614,17 +615,8 @@ public class EmbeddedNeo4jDialect extends BaseNeo4jDialect<EmbeddedNeo4jEntityQu
 	@Override
 	public ClosableIterator<Tuple> callStoredProcedure(String storedProcedureName,
 			ProcedureQueryParameters queryParameters, TupleContext tupleContext) {
-		StringBuilder queryBuilder = new StringBuilder(  );
-		queryBuilder.append( "CALL " ).append( storedProcedureName ).append( "(" );
-		Map namedParams = new HashMap<>(  );
-		List parameters = queryParameters.getPositionalParameters();
-		for(int i = 0; i < parameters.size(); i++) {
-			queryBuilder.append( "{a" + i + "}," );
-			namedParams.put( "a" + i, parameters.get( i ) );
-		}
-		queryBuilder.replace( queryBuilder.lastIndexOf( "," ), queryBuilder.length(), "" );
-		queryBuilder.append( ")" );
-		Result result = dataBase.execute( queryBuilder.toString(), namedParams);
+		Pair<String, Map> queryAndParams = buildProcedureQueryWithParams( storedProcedureName, queryParameters );
+		Result result = dataBase.execute( queryAndParams.getKey(), queryAndParams.getValue());
 		return CollectionHelper.newClosableIterator( extractTuples( result) );
 	}
 

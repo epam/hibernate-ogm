@@ -173,15 +173,26 @@ public class Neo4jTestHelper extends BaseGridDialectTestHelper implements GridDi
 
 	@Override
 	public void prepareDatabase(SessionFactory sessionFactory) {
-		EmbeddedNeo4jDatastoreProvider provider = (EmbeddedNeo4jDatastoreProvider) Neo4jTestHelper
-				.getDatastoreProvider( sessionFactory );
-		try {
-			( (GraphDatabaseAPI) provider.getDatabase() )
-					.getDependencyResolver().resolveDependency( Procedures.class ).registerProcedure(
-					CarStoredProcedures.class );
-		}
-		catch (KernelException e) {
-			throw new RuntimeException( "Loading of stored procedures is failed", e );
+		DatastoreProviderType providerType = TestHelper.getCurrentDatastoreProviderType();
+		switch ( providerType ) {
+			case NEO4J_EMBEDDED:
+				EmbeddedNeo4jDatastoreProvider provider =
+						(EmbeddedNeo4jDatastoreProvider) Neo4jTestHelper.getDatastoreProvider( sessionFactory );
+				try {
+					( (GraphDatabaseAPI) provider.getDatabase() )
+							.getDependencyResolver().resolveDependency( Procedures.class )
+							.registerProcedure( CarStoredProcedures.class );
+				}
+				catch (KernelException e) {
+					throw new RuntimeException( "Loading of stored procedures is failed", e );
+				}
+				break;
+			case NEO4J_BOLT:
+				break;
+			case NEO4J_HTTP:
+				break;
+			default:
+				throw new RuntimeException( "Not testing with Neo4jDB, cannot extract underlying dialect" );
 		}
 	}
 }
