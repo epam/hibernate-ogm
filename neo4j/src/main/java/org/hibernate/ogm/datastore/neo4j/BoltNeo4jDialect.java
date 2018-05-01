@@ -600,10 +600,13 @@ public class BoltNeo4jDialect extends BaseNeo4jDialect<BoltNeo4jEntityQueries, B
 	public ClosableIterator<Tuple> callStoredProcedure(String storedProcedureName,
 			ProcedureQueryParameters queryParameters, TupleContext tupleContext) {
 		Pair<String, Map> queryAndParams = buildProcedureQueryWithParams( storedProcedureName, queryParameters );
-		DatastoreProvider datastoreProvider = getServiceRegistry().getService( DatastoreProvider.class );
-		BoltNeo4jDatastoreProvider neo4jProvider = (BoltNeo4jDatastoreProvider) datastoreProvider;
-		BoltNeo4jClient client = neo4jProvider.getClient();
-		Transaction transaction = client.getDriver().session().beginTransaction();
+		Transaction transaction = transaction( tupleContext );
+		if( transaction == null ) {
+			DatastoreProvider datastoreProvider = getServiceRegistry().getService( DatastoreProvider.class );
+			BoltNeo4jDatastoreProvider neo4jProvider = (BoltNeo4jDatastoreProvider) datastoreProvider;
+			BoltNeo4jClient client = neo4jProvider.getClient();
+			transaction = client.getDriver().session().beginTransaction();
+		}
 		StatementResult result = transaction.run( queryAndParams.getKey(), queryAndParams.getValue() );
 		return CollectionHelper.newClosableIterator( extractTuples( result) );
 	}
