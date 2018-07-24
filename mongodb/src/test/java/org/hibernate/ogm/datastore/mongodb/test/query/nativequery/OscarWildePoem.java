@@ -6,6 +6,8 @@
  */
 package org.hibernate.ogm.datastore.mongodb.test.query.nativequery;
 
+import org.hibernate.annotations.NamedQuery;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +33,7 @@ import javax.persistence.Table;
 	@NamedNativeQuery(name = "PoemRatings", query = "db.WILDE_POEM.find({}, { 'rating' : 1 })", resultSetMapping = "ratingMapping" ),
 	@NamedNativeQuery(name = "CountPoems", query = "db.WILDE_POEM.count()", resultSetMapping = "countMapping")
 })
+@NamedQuery(name = "entry_count", query = "select count(be) from WILDE_POEM be")
 @SqlResultSetMappings({
 	@SqlResultSetMapping(name = "poemNameMapping", columns = @ColumnResult(name = "name")),
 	@SqlResultSetMapping(name = "poemMapping", entities = @EntityResult(entityClass = OscarWildePoem.class)),
