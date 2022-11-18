@@ -151,8 +151,14 @@ public class PositionalParametersStoredProcedureCallTest extends OgmJpaTestCase 
 
 			List<?> listResult = storedProcedureQuery.getResultList();
 			assertThat( listResult ).hasSize( 2 );
-			assertThat( ( (Number) listResult.get( 0 ) ).intValue() ).isEqualTo( 2 );
-			assertThat( listResult.get( 1 ) ).isEqualTo( "title'2" );
+			if ( listResult.get( 0 ) instanceof Integer ) {
+				assertThat( ( (Number) listResult.get( 0 ) ).intValue() ).isEqualTo( 2 );
+				assertThat( listResult.get( 1 ) ).isEqualTo( "title'2" );
+			}
+			else {
+				assertThat( listResult.get( 0 ) ).isEqualTo( "title'2" );
+				assertThat( ( (Number) listResult.get( 1 ) ).intValue() ).isEqualTo( 2 );
+			}
 		} );
 	}
 
