@@ -15,6 +15,7 @@ import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN;
 import static org.hibernate.ogm.utils.GridDialectType.INFINISPAN_REMOTE;
 import static org.hibernate.ogm.utils.GridDialectType.NEO4J_REMOTE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -151,8 +152,14 @@ public class PositionalParametersStoredProcedureCallTest extends OgmJpaTestCase 
 
 			List<?> listResult = storedProcedureQuery.getResultList();
 			assertThat( listResult ).hasSize( 2 );
-			assertThat( ( (Number) listResult.get( 0 ) ).intValue() ).isEqualTo( 2 );
-			assertThat( listResult.get( 1 ) ).isEqualTo( "title'2" );
+			assertThat( listResult ).contains( "title'2" ) ;
+			List<Integer> found = new ArrayList<>();
+			listResult.forEach( obj -> {
+				if ( obj instanceof Number ) {
+					found.add( ( (Number) obj ).intValue() );
+				}
+			} );
+			assertThat( found ).containsExactly( 2 );
 		} );
 	}
 
